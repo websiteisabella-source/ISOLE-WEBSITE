@@ -1,0 +1,126 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-heading: var(--font-serif-app), 'Iowan Old Style', 'Palatino Linotype',
+    'Book Antiqua', Georgia, serif;
+  --font-serif: var(--font-serif-app), 'Iowan Old Style', 'Palatino Linotype',
+    'Book Antiqua', Georgia, serif;
+  --font-sans: var(--font-sans-app), 'Avenir Next', 'Segoe UI',
+    'Helvetica Neue', Arial, sans-serif;
+  --font-tan-pearl: var(--font-tan-pearl), 'Iowan Old Style',
+    'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+  --font-poetry: var(--font-poetry), 'Iowan Old Style', 'Palatino Linotype',
+    'Book Antiqua', Georgia, serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-nude: var(--nude);
+  --color-cream: var(--cream);
+  --color-coral: var(--coral);
+  --color-petal: var(--petal);
+  --color-lavender: var(--lavender);
+  --color-ink: var(--ink);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  color-scheme: light;
+
+  --nude: #fadbb9;
+  --cream: #fbf5ec;
+  --coral: #f1563a;
+  --petal: #fcb6c5;
+  --lavender: #9971ae;
+  --ink: #2e2521;
+
+  --radius: 0.5rem;
+
+  --background: #fbf5ec;
+  --foreground: #2e2521;
+  --card: #ffffff;
+  --card-foreground: #2e2521;
+  --popover: #ffffff;
+  --popover-foreground: #2e2521;
+  --primary: #f1563a;
+  --primary-foreground: #fff8f1;
+  --secondary: #fadbb9;
+  --secondary-foreground: #2e2521;
+  --muted: #f1e7d8;
+  --muted-foreground: #8a7866;
+  --accent: #fadbb9;
+  --accent-foreground: #2e2521;
+  --destructive: #c0392b;
+  --border: #e8dcc9;
+  --input: #e8dcc9;
+  --ring: #f1563a;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/40;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  .font-serif {
+    font-family: var(--font-serif);
+  }
+
+  .editorial-title {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.02;
+  }
+
+  .tracking-luxe {
+    letter-spacing: 0.28em;
+  }
+
+  .ease-luxe {
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .grain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' /%3E%3C/svg%3E");
+  }
+}
