@@ -1,17 +1,9 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Cormorant_Garamond, Quicksand } from 'next/font/google'
+import { Quicksand } from 'next/font/google'
 import localFont from 'next/font/local'
 import { SITE_NAME } from '@/lib/site'
 import './globals.css'
-
-const serif = Cormorant_Garamond({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  style: ['normal', 'italic'],
-  variable: '--font-serif-app',
-  display: 'swap',
-})
 
 const sans = Quicksand({
   subsets: ['latin'],
@@ -22,7 +14,7 @@ const sans = Quicksand({
 
 const tanPearl = localFont({
   src: './fonts/TAN-Pearl-Regular.woff2',
-  variable: '--font-tan-pearl',
+  variable: '--font-tan-pearl-local',
   weight: '400',
   style: 'normal',
   display: 'swap',
@@ -33,7 +25,7 @@ const tanPearl = localFont({
 
 const poetry = localFont({
   src: './fonts/Poetry-of-Silence.ttf',
-  variable: '--font-poetry',
+  variable: '--font-poetry-local',
   weight: '400',
   style: 'normal',
   display: 'swap',
@@ -76,7 +68,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`bg-background ${serif.variable} ${sans.variable}`}
+      className={`bg-background ${sans.variable}`}
     >
       <body
         className={`${tanPearl.variable} ${poetry.variable} font-sans antialiased`}

@@ -4,7 +4,10 @@ import { products } from '@/lib/products'
 
 export function NewArrivals() {
   return (
-    <section id="novedades" className="bg-nude/60 px-5 py-24 md:px-10 md:py-32">
+    <section
+      id="novedades"
+      className="px-5 pt-16 pb-24 md:px-10 md:py-32"
+    >
       <div className="mx-auto max-w-7xl">
         <Reveal className="mb-14 text-center">
           <span className="text-[0.7rem] uppercase tracking-luxe text-coral">

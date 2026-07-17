@@ -14,9 +14,11 @@ export default function Page() {
       <Navbar />
       <main>
         <Hero />
-        <EditorialSection />
-        <MasonryGallery />
-        <NewArrivals />
+        <div className="brand-flow">
+          <EditorialSection />
+          <MasonryGallery />
+          <NewArrivals />
+        </div>
         <QuoteSection />
         <CommunityGallery />
       </main>

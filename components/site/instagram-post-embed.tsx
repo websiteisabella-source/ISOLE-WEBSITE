@@ -12,7 +12,7 @@ type InstagramPostEmbedProps = {
 
 export function InstagramPostEmbed({
   embedUrl,
-  label = 'Isabella',
+  label = 'ISOLÉ',
   previewAlt,
   previewSrc,
   toggleId,
@@ -63,7 +63,7 @@ export function InstagramPostEmbed({
         className="fixed inset-0 z-[80] hidden items-center justify-center bg-ink/80 px-4 py-6 backdrop-blur-sm peer-checked:flex"
         role="dialog"
         aria-modal="true"
-        aria-label="Reel de Isabella"
+        aria-label={`Reel de ${label}`}
       >
         <label
           htmlFor={toggleId}
@@ -79,7 +79,7 @@ export function InstagramPostEmbed({
             <CloseIcon className="size-5" />
           </label>
           <iframe
-            title="Publicacion de Isabella en Instagram"
+            title={`Publicacion de ${label} en Instagram`}
             src={embedUrl}
             allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
             className="absolute inset-0 size-full border-0"

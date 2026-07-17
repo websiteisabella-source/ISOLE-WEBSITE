@@ -41,7 +41,7 @@ export function CollectionCard({
         <p className="text-[0.65rem] uppercase tracking-luxe text-cream/80">
           {caption}
         </p>
-        <p className="mt-1 font-serif text-2xl text-cream md:text-3xl">
+        <p className="mt-1 font-serif text-2xl leading-[1.25] text-cream md:text-3xl">
           {label}
         </p>
       </div>

@@ -42,11 +42,11 @@ export function QuoteSection() {
         <p className="text-[0.7rem] uppercase tracking-luxe text-petal">
           Manifiesto
         </p>
-        <p className="editorial-title mt-8 text-balance text-3xl leading-tight text-cream sm:text-4xl md:text-6xl">
+        <p className="editorial-title mt-8 text-balance text-3xl text-cream sm:text-4xl md:text-6xl">
           Creemos en la belleza que no grita.
           <br />
-          <span className="italic">En vestir despacio</span>, en lo natural, y
-          en la emoción de sentirse una misma.
+          En vestir despacio, en lo natural, y en la emoción de sentirse una
+          misma.
         </p>
         <p className="mx-auto mt-10 max-w-lg text-sm leading-relaxed text-cream/75">
           ISOLÉ no es una tienda. Es una invitación a habitar la ropa con calma y

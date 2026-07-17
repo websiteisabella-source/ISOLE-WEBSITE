@@ -36,7 +36,9 @@ export function ProductCard({
       </div>
 
       <div className="mt-5 flex items-baseline justify-between gap-4">
-        <h3 className="font-serif text-2xl text-ink">{product.name}</h3>
+        <h3 className="font-serif text-2xl leading-[1.25] text-ink">
+          {product.name}
+        </h3>
         <span className="text-[0.7rem] uppercase tracking-[0.18em] text-muted-foreground transition-colors duration-500 group-hover:text-coral">
           {product.category}
         </span>

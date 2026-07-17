@@ -10,7 +10,7 @@ export function EditorialSection() {
   return (
     <section
       id="historia"
-      className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-5 py-24 md:grid-cols-2 md:gap-20 md:px-10 md:py-36"
+      className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-5 pt-24 pb-8 md:grid-cols-2 md:gap-20 md:px-10 md:py-36"
     >
       <Reveal className="relative aspect-[4/5] overflow-hidden rounded-sm">
         <Image
@@ -30,6 +30,9 @@ export function EditorialSection() {
         <h2 className="editorial-title mt-6 text-balance text-4xl text-ink md:text-5xl">
           Nacimos del deseo de vestir lo natural
         </h2>
+        <p className="brand-subtitle mt-4 text-4xl text-coral">
+          luz interior
+        </p>
         <p className="mt-7 text-base leading-relaxed text-muted-foreground">
           ISOLÉ es una conversación entre la piel y la tela. Trabajamos con
           materiales nobles, tonos cálidos y siluetas que respiran, creando

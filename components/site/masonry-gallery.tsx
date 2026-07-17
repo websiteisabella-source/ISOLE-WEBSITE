@@ -37,7 +37,7 @@ export function MasonryGallery() {
   return (
     <section
       id="colecciones"
-      className="mx-auto max-w-7xl px-5 py-20 md:px-10 md:py-28"
+      className="mx-auto max-w-7xl px-5 pt-8 pb-20 md:px-10 md:py-28"
     >
       <Reveal className="mb-12 flex flex-col items-start justify-between gap-4 md:mb-16 md:flex-row md:items-end">
         <div>

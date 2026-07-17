@@ -52,7 +52,7 @@ export default async function ProductPage({
   return (
     <>
       <Navbar />
-      <main className="pt-24 md:pt-28">
+      <main className="pt-28 md:pt-32">
         <div className="mx-auto max-w-7xl px-5 md:px-10">
           <Link
             href="/#novedades"

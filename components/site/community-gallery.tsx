@@ -42,6 +42,9 @@ export function CommunityGallery() {
           <h2 className="editorial-title mt-4 max-w-2xl text-balance text-4xl text-ink md:text-6xl">
             Mujeres reales, momentos reales
           </h2>
+          <p className="brand-subtitle mt-3 text-3xl text-coral">
+            comunidad ISOLÉ
+          </p>
           <a
             href={INSTAGRAM_URL}
             target="_blank"
@@ -49,7 +52,7 @@ export function CommunityGallery() {
             className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-ink transition-colors duration-500 hover:text-coral"
           >
             <InstagramIcon className="size-5" />
-            Isabella
+            ISOLÉ
           </a>
         </Reveal>
 
@@ -63,42 +66,42 @@ export function CommunityGallery() {
               {i === 0 ? (
                 <InstagramPostEmbed
                   embedUrl="https://www.instagram.com/p/DY-Psx0IFrh/embed/"
-                  previewAlt="Reel de Isabella con collar dorado y top blanco"
+                  previewAlt="Reel de ISOLÉ con collar dorado y top blanco"
                   previewSrc={cloudinaryImage('/images/isabella-reel-dy-psx0ifrh.jpg')}
                   toggleId="isabella-reel-dy-psx0ifrh"
                 />
               ) : i === 1 ? (
                 <InstagramPostEmbed
                   embedUrl="https://www.instagram.com/p/DXsbQTfDtvU/embed/"
-                  previewAlt="Reel de Isabella con outfit azul en tienda"
+                  previewAlt="Reel de ISOLÉ con outfit azul en tienda"
                   previewSrc={cloudinaryImage('/images/isabella-reel-dxsbqtfdtu.jpg')}
                   toggleId="isabella-reel-dxsbqtfdtu"
                 />
               ) : i === 2 ? (
                 <InstagramPostEmbed
                   embedUrl="https://www.instagram.com/p/DXhJ5cyDnqh/embed/"
-                  previewAlt="Reel de Isabella con pañoleta floral roja"
+                  previewAlt="Reel de ISOLÉ con pañoleta floral roja"
                   previewSrc={cloudinaryImage('/images/isabella-reel-dxhj5cydnqh.jpg')}
                   toggleId="isabella-reel-dxhj5cydnqh"
                 />
               ) : i === 3 ? (
                 <InstagramPostEmbed
                   embedUrl="https://www.instagram.com/p/DWz4FBuDGbK/embed/"
-                  previewAlt="Reel de Isabella con outfit azul en sala"
+                  previewAlt="Reel de ISOLÉ con outfit azul en sala"
                   previewSrc={cloudinaryImage('/images/isabella-reel-dwz4fbudgbk.jpg')}
                   toggleId="isabella-reel-dwz4fbudgbk"
                 />
               ) : i === 4 ? (
                 <InstagramPostEmbed
                   embedUrl="https://www.instagram.com/p/DSxSEnRjdSO/embed/"
-                  previewAlt="Reel de Isabella con dos mujeres en exterior"
+                  previewAlt="Reel de ISOLÉ con dos mujeres en exterior"
                   previewSrc={cloudinaryImage('/images/isabella-reel-dsksenrjdso.jpg')}
                   toggleId="isabella-reel-dsksenrjdso"
                 />
               ) : i === 5 ? (
                 <InstagramPostEmbed
                   embedUrl="https://www.instagram.com/p/DUrHgMNjtCH/embed/"
-                  previewAlt="Reel de Isabella con torta y flores"
+                  previewAlt="Reel de ISOLÉ con torta y flores"
                   previewSrc={cloudinaryImage('/images/isabella-reel-durhgmnjtch.jpg')}
                   toggleId="isabella-reel-durhgmnjtch"
                 />

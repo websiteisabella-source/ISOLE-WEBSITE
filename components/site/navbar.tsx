@@ -49,7 +49,7 @@ export function Navbar() {
     >
       <nav
         aria-label="Principal"
-        className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 md:h-20 md:px-10"
+        className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 md:h-24 md:px-10"
       >
         <ul className="hidden flex-1 items-center gap-8 md:flex">
           {leftLinks.map((l) => (
@@ -76,11 +76,11 @@ export function Navbar() {
           </label>
 
           <div className="fixed inset-0 z-[60] hidden flex-col bg-nude peer-checked:flex">
-            <div className="flex h-16 items-center justify-between px-5">
+            <div className="flex h-20 items-center justify-between px-5">
               <img
                 src={logoImage}
-                alt="ISOLE"
-                className="h-10 w-auto"
+                alt="ISOLÉ"
+                className="w-[180px] max-w-[52vw]"
               />
               <label
                 htmlFor="mobile-menu-toggle"
@@ -109,12 +109,12 @@ export function Navbar() {
         <Link
           href="/"
           className="flex items-center justify-center px-6"
-          aria-label="ISOLE, ir al inicio"
+          aria-label="ISOLÉ, ir al inicio"
         >
           <img
             src={logoImage}
             alt=""
-            className={`h-10 w-auto transition-all duration-700 ease-luxe md:h-12 ${
+            className={`w-[180px] max-w-[52vw] transition-all duration-700 ease-luxe md:w-[196px] ${
               scrolled ? 'opacity-100' : 'opacity-95'
             }`}
             aria-hidden="true"

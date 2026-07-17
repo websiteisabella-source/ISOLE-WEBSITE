@@ -2,20 +2,21 @@ import Link from 'next/link'
 import { INSTAGRAM_URL, SITE_NAME, whatsappLink } from '@/lib/site'
 import { Newsletter } from './newsletter'
 import { InstagramIcon, PinIcon, WhatsAppIcon } from './icons'
+import { cloudinaryImage } from '@/lib/cloudinary-assets'
+
+const logoImage = cloudinaryImage('/images/isole-logo-wordmark.png')
 
 export function Footer() {
   return (
     <footer
       id="contacto"
-      className="relative bg-ink px-5 pt-20 pb-10 text-cream md:px-10 md:pt-28"
+      className="brand-organic relative bg-nude px-5 pt-20 pb-10 text-ink md:px-10 md:pt-28"
     >
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-col gap-16 lg:flex-row lg:justify-between">
           <div className="max-w-sm">
-            <p className="font-serif text-4xl tracking-[0.3em] md:text-5xl">
-              ISOL&Eacute;
-            </p>
-            <p className="mt-6 text-sm leading-relaxed text-cream/70">
+            <img src={logoImage} alt="ISOLÉ" className="w-[210px]" />
+            <p className="mt-8 text-sm leading-relaxed text-muted-foreground">
               Una casa de moda romántica y natural. Cada pieza nace para ser
               sentida, no solo vestida.
             </p>
@@ -24,7 +25,7 @@ export function Footer() {
           <Newsletter />
         </div>
 
-        <div className="mt-20 grid grid-cols-2 gap-10 border-t border-cream/15 pt-12 md:grid-cols-4">
+        <div className="mt-20 grid grid-cols-2 gap-10 border-t border-coral/25 pt-12 md:grid-cols-4">
           <FooterCol title="Casa">
             <FooterLink href="/#colecciones">Colecciones</FooterLink>
             <FooterLink href="/#novedades">Novedades</FooterLink>
@@ -33,13 +34,13 @@ export function Footer() {
           </FooterCol>
 
           <FooterCol title="Showroom">
-            <p className="flex items-start gap-2 text-sm text-cream/70">
+            <p className="flex items-start gap-2 text-sm text-muted-foreground">
               <PinIcon className="mt-0.5 size-4 shrink-0" />
               Calle del Atardecer 14
               <br />
             </p>
-            <p className="text-sm text-cream/70">Mar a Sáb / 11:00 a 20:00</p>
-            <p className="text-sm text-cream/70">Cita previa disponible</p>
+            <p className="text-sm text-muted-foreground">Mar a Sáb / 11:00 a 20:00</p>
+            <p className="text-sm text-muted-foreground">Cita previa disponible</p>
           </FooterCol>
 
           <FooterCol title="Contacto">
@@ -49,7 +50,7 @@ export function Footer() {
               )}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm text-cream/70 transition-colors hover:text-coral"
+              className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-coral"
             >
               <WhatsAppIcon className="size-4" /> WhatsApp
             </a>
@@ -57,7 +58,7 @@ export function Footer() {
               href={INSTAGRAM_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm text-cream/70 transition-colors hover:text-coral"
+              className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-coral"
             >
               <InstagramIcon className="size-4" /> Instagram
             </a>
@@ -65,21 +66,21 @@ export function Footer() {
               href={INSTAGRAM_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-cream/70 transition-colors hover:text-coral"
+              className="text-sm text-muted-foreground transition-colors hover:text-coral"
             >
-              Isabella
+              Comunidad ISOLÉ
             </a>
           </FooterCol>
 
           <FooterCol title="Atelier">
-            <p className="text-sm text-cream/70">
+            <p className="text-sm text-muted-foreground">
               Piezas en cantidades limitadas, confeccionadas con materiales
               naturales.
             </p>
           </FooterCol>
         </div>
 
-        <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-cream/15 pt-8 text-xs text-cream/50 md:flex-row">
+        <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-coral/25 pt-8 text-xs text-muted-foreground md:flex-row">
           <p>&copy; {new Date().getFullYear()} {SITE_NAME}. Hecho con calma.</p>
           <p className="uppercase tracking-[0.2em]">Disponible en tienda física</p>
         </div>
@@ -97,7 +98,7 @@ function FooterCol({
 }) {
   return (
     <div className="flex flex-col gap-3">
-      <h3 className="mb-1 text-[0.7rem] uppercase tracking-[0.2em] text-cream/50">
+      <h3 className="mb-1 text-[0.7rem] uppercase tracking-[0.2em] text-coral">
         {title}
       </h3>
       {children}
@@ -115,7 +116,7 @@ function FooterLink({
   return (
     <Link
       href={href}
-      className="text-sm text-cream/70 transition-colors duration-500 hover:text-coral"
+      className="text-sm text-muted-foreground transition-colors duration-500 hover:text-coral"
     >
       {children}
     </Link>

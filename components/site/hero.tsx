@@ -11,7 +11,7 @@ const heroImage = cloudinaryImage('/images/hero.png')
 
 export function Hero() {
   return (
-    <section className="relative h-[100svh] w-full overflow-hidden md:mt-20 md:h-[calc(100svh-5rem)]">
+    <section className="relative h-[100svh] w-full overflow-hidden md:mt-24 md:h-[calc(100svh-6rem)]">
       <motion.div
         className="absolute inset-0"
         initial={{ scale: 1.12 }}
@@ -59,7 +59,7 @@ export function Hero() {
           transition={{ delay: 0.8, duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
           className="editorial-title max-w-4xl px-6 text-balance text-5xl text-cream sm:text-6xl md:text-8xl"
         >
-          Vestir la luz <span className="italic">de la tarde</span>
+          Vestir la luz de la tarde
         </motion.h1>
         <motion.div
           initial={false}
