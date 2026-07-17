@@ -136,6 +136,49 @@ NEXT_PUBLIC_INSTAGRAM_URL=https://instagram.com/tu-cuenta
 NEXT_PUBLIC_WHATSAPP_NUMBER=573001234567
 ```
 
+## Sincronizar publicaciones de Instagram
+
+La seccion Comunidad no llama a Instagram desde el navegador. Para proteger el
+token, primero se sincronizan las publicaciones y se guardan como archivos
+estaticos antes del build.
+
+Para traer las publicaciones que aparecen en una pagina como
+`https://www.instagram.com/isabellla.co/tagged/`, usa la fuente `tagged`. Esta
+fuente consulta el endpoint oficial de Meta para publicaciones donde la cuenta
+profesional fue etiquetada.
+
+Variables requeridas para publicaciones etiquetadas:
+
+```env
+INSTAGRAM_ACCESS_TOKEN=token-de-meta
+INSTAGRAM_USER_ID=id-de-la-cuenta-profesional
+INSTAGRAM_SOURCE=tagged
+INSTAGRAM_TAGGED_LABEL=isabellla.co
+INSTAGRAM_POST_LIMIT=6
+INSTAGRAM_SYNC_REQUIRED=true
+```
+
+Tambien se puede usar una fuente por hashtags:
+
+```env
+INSTAGRAM_ACCESS_TOKEN=token-de-meta
+INSTAGRAM_USER_ID=id-de-la-cuenta-profesional
+INSTAGRAM_SOURCE=hashtags
+INSTAGRAM_HASHTAGS=isolemomentos,isolestudio
+INSTAGRAM_POST_LIMIT=6
+```
+
+Luego ejecuta:
+
+```bash
+npm run sync:instagram
+npm run build
+```
+
+El script busca publicaciones etiquetadas o por hashtag, descarga las imagenes
+a `public/images/instagram/` y actualiza `public/data/community-posts.json`. Si
+no hay credenciales, el sitio mantiene las imagenes editoriales de respaldo.
+
 ## Estructura importante del proyecto
 
 ### Rutas
@@ -279,3 +322,195 @@ La home esta compuesta en [app/page.tsx](C:\Users\Pablo Tomas Vargas\Desktop\iso
 - validar links, imagenes y paginas de producto
 - configurar variables publicas si quieres cambiar Instagram o WhatsApp
 - publicar la carpeta `out/` en tu hosting
+
+## Backend FastAPI
+
+Este repositorio tambien incluye un backend Python 3.13 listo para servir el
+showroom como API de produccion. La API usa FastAPI, MongoDB con Motor y
+Beanie, Cloudinary para imagenes, JWT con refresh-token rotation, bcrypt,
+middlewares de seguridad, rate limiting, logs rotativos, Docker, CI y pruebas.
+
+La API vive como paquete Python dentro de `app/` junto a la app Next.js. Los
+archivos TypeScript existentes siguen siendo el frontend; los submodulos Python
+son `app/api`, `app/auth`, `app/config`, `app/database`, `app/models`,
+`app/repositories`, `app/services`, `app/security`, `app/middleware`,
+`app/schemas`, `app/validators`, `app/cloudinary` y `app/tests`.
+
+### Arquitectura backend
+
+- `main.py`: entrypoint de Uvicorn.
+- `app/main.py`: factory FastAPI, lifespan, CORS, middlewares y router v1.
+- `app/config`: settings tipados con Pydantic Settings.
+- `app/database`: conexion centralizada async a MongoDB.
+- `app/models`: documentos Beanie con timestamps, indices y soft delete.
+- `app/repositories`: acceso a datos y queries optimizadas.
+- `app/services`: casos de uso de autenticacion, catalogo, settings e imagenes.
+- `app/api/v1/routes`: endpoints bajo `/api/v1/`.
+- `app/exceptions`: manejo seguro y uniforme de errores.
+
+Todas las respuestas siguen el contrato:
+
+```json
+{
+  "success": true,
+  "message": "Operation completed",
+  "data": {},
+  "errors": null
+}
+```
+
+### Endpoints principales
+
+- `/api/v1/auth/register`
+- `/api/v1/auth/login`
+- `/api/v1/auth/logout`
+- `/api/v1/auth/refresh`
+- `/api/v1/profile`
+- `/api/v1/users`
+- `/api/v1/uploads`
+- `/api/v1/images`
+- `/api/v1/products`
+- `/api/v1/categories`
+- `/api/v1/settings`
+- `/api/v1/health`
+
+Swagger, OpenAPI y Redoc quedan disponibles en:
+
+```text
+http://localhost:8000/docs
+http://localhost:8000/openapi.json
+http://localhost:8000/redoc
+```
+
+### Variables de entorno backend
+
+El archivo `.env.example` incluye las variables del frontend y estas variables
+del backend:
+
+```env
+APP_NAME=ISOLE API
+ENVIRONMENT=development
+DEBUG=false
+HOST=0.0.0.0
+PORT=8000
+MONGODB_URI=mongodb://localhost:27017
+DATABASE_NAME=isole_showroom
+JWT_SECRET_KEY=change-me-access-token-secret-key-at-least-32-chars
+JWT_REFRESH_SECRET_KEY=change-me-refresh-token-secret-key-at-least-32-chars
+JWT_ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+REFRESH_TOKEN_EXPIRE_DAYS=14
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+# Alternativa compacta:
+# CLOUDINARY_URL=cloudinary://<api-key>:<api-secret>@sguhbpc0
+CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+LOG_LEVEL=INFO
+```
+
+Para MongoDB Atlas, usa el connection string `mongodb+srv` del cluster. Con el
+usuario de base de datos de Atlas, el formato queda asi:
+
+```env
+MONGODB_URI=mongodb+srv://websiteisabella_db_user:<password>@<cluster-host>/isole_showroom?retryWrites=true&w=majority
+DATABASE_NAME=isole_showroom
+```
+
+Reemplaza `<password>` por la clave del usuario de Atlas y `<cluster-host>` por
+el host real del cluster, por ejemplo `cluster0.xxxxx.mongodb.net`. Mantén esos
+datos solo en `.env`; ese archivo ya esta ignorado por Git.
+
+En `ENVIRONMENT=production`, la API rechaza secretos JWT debiles y CORS
+wildcard. El primer usuario registrado se crea como `admin`; los siguientes se
+crean como `user`.
+
+### Instalacion backend
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+copy .env.example .env
+```
+
+Configura `.env` con MongoDB, JWT y Cloudinary. Luego ejecuta:
+
+```bash
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+### Docker Compose
+
+```bash
+docker compose up --build
+```
+
+Compose levanta:
+
+- `api`: FastAPI en `http://localhost:8000`
+- `mongo`: MongoDB 7 con healthcheck
+- volumen `api_logs` para logs rotativos
+- volumen `mongo_data` para persistencia
+
+### Calidad y pruebas
+
+```bash
+black app main.py
+ruff check app
+mypy app main.py
+pytest
+```
+
+El objetivo de cobertura configurado es 90%. Las pruebas de MongoDB estan
+marcadas como integracion y se activan con:
+
+```bash
+RUN_MONGODB_TESTS=1 pytest -m integration
+```
+
+### Cloudinary
+
+Las imagenes nunca se guardan en disco. `ImageService` envia archivos a
+Cloudinary y MongoDB conserva solamente metadata como `public_id`, `asset_id`,
+`secure_url`, `format`, `width`, `height`, `bytes`, `folder`, `resource_type` y
+timestamps.
+
+Cloudinary puede configurarse con las tres variables separadas o con una sola
+`CLOUDINARY_URL`:
+
+```env
+CLOUDINARY_URL=cloudinary://<api-key>:<api-secret>@sguhbpc0
+```
+
+Ese enlace entre Cloudinary y MongoDB sucede en el flujo de uploads:
+
+- `CloudinaryService` sube el archivo y normaliza la respuesta de Cloudinary.
+- `ImageService` guarda esa metadata en la coleccion `image_assets`.
+- Las rutas `/api/v1/uploads` y `/api/v1/images` exponen el flujo de carga,
+  consulta, reemplazo, borrado y URL firmada.
+
+### Seguridad
+
+La API incluye:
+
+- OAuth2 Password Bearer.
+- Access tokens y refresh tokens JWT con rotacion.
+- Logout con blocklist de access tokens y revocacion de refresh tokens.
+- Hash bcrypt con Passlib.
+- Roles `admin` y `user`.
+- Dependencias para proteger rutas por rol o permiso.
+- Rate limiting por cliente y ruta.
+- CORS configurable por entorno.
+- Headers de seguridad.
+- Rechazo de claves MongoDB peligrosas como `$ne` o campos con `.`.
+- Manejo de excepciones sin exponer errores internos.
+- Logs separados para aplicacion, accesos y seguridad.
+
+### CI/CD
+
+El workflow `.github/workflows/backend-ci.yml` instala Python 3.13, ejecuta
+Ruff, Black, Mypy y Pytest con MongoDB de servicio. El `Dockerfile` usa usuario
+no root, healthcheck y entrypoint Uvicorn. `deploy/nginx/default.conf` contiene
+una configuracion base para proxy reverso hacia la API.

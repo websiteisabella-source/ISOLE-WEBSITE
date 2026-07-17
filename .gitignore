@@ -8,6 +8,8 @@ __v0_jsx-dev-runtime.ts
 
 # Environment variables
 .env*.local
+.env
+.env.*.secret
 
 # Common ignores
 node_modules
@@ -19,3 +21,16 @@ dist/
 *.tsbuildinfo
 .agents/
 .DS_Store
+
+# Python backend
+__pycache__/
+*.py[cod]
+.python-version
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+logs/

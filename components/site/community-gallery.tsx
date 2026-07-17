@@ -1,31 +1,35 @@
 import Image from 'next/image'
+import { communityPosts, type CommunityPost } from '@/lib/community-posts'
+import { cloudinaryImage } from '@/lib/cloudinary-assets'
 import { INSTAGRAM_URL } from '@/lib/site'
 import { InstagramIcon } from './icons'
+import { InstagramPostEmbed } from './instagram-post-embed'
 import { Reveal } from './reveal'
 
-const photos = [
-  {
-    src: '/images/community-1.png',
-    alt: 'Mujer riendo bajo la luz del sol con prenda de lino crema',
-  },
-  {
-    src: '/images/community-2.png',
-    alt: 'Mujer con vestido coral tomando café en una terraza soleada',
-  },
-  { src: '/images/community-3.png', alt: 'Dos amigas caminando juntas al atardecer' },
-  {
-    src: '/images/community-4.png',
-    alt: 'Mujer leyendo junto a la ventana con luz cálida',
-  },
-  {
-    src: '/images/community-5.png',
-    alt: 'Mujer girando con vestido coral en una azotea soleada',
-  },
-  {
-    src: '/images/community-6.png',
-    alt: 'Retrato cálido de mujer sonriendo a la luz natural',
-  },
-]
+function CommunityImage({ post }: { post: CommunityPost }) {
+  const imageClassName =
+    'object-cover transition-transform duration-[1100ms] ease-luxe group-hover:scale-110'
+
+  if (/^https?:\/\//.test(post.src)) {
+    return (
+      <img
+        src={post.src}
+        alt={post.alt}
+        className={`size-full ${imageClassName}`}
+      />
+    )
+  }
+
+  return (
+    <Image
+      src={post.src}
+      alt={post.alt}
+      fill
+      sizes="(max-width: 768px) 50vw, 18vw"
+      className={imageClassName}
+    />
+  )
+}
 
 export function CommunityGallery() {
   return (
@@ -45,31 +49,76 @@ export function CommunityGallery() {
             className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-ink transition-colors duration-500 hover:text-coral"
           >
             <InstagramIcon className="size-5" />
-            @isole.studio
+            Isabella
           </a>
         </Reveal>
 
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-6 md:gap-4">
-          {photos.map((photo, i) => (
+        <div className="grid grid-cols-3 gap-1.5 md:gap-3">
+          {communityPosts.map((post, i) => (
             <Reveal
-              key={photo.src}
+              key={post.id}
               delay={i * 0.06}
-              className={
-                i === 0 || i === 3 ? 'col-span-2 md:col-span-2' : 'col-span-1'
-              }
+              className="col-span-1"
             >
-              <div className="group relative aspect-square overflow-hidden rounded-sm">
-                <Image
-                  src={photo.src || '/placeholder.svg'}
-                  alt={photo.alt}
-                  fill
-                  sizes="(max-width: 768px) 50vw, 18vw"
-                  className="object-cover transition-transform duration-[1100ms] ease-luxe group-hover:scale-110"
+              {i === 0 ? (
+                <InstagramPostEmbed
+                  embedUrl="https://www.instagram.com/p/DY-Psx0IFrh/embed/"
+                  previewAlt="Reel de Isabella con collar dorado y top blanco"
+                  previewSrc={cloudinaryImage('/images/isabella-reel-dy-psx0ifrh.jpg')}
+                  toggleId="isabella-reel-dy-psx0ifrh"
                 />
-                <div className="absolute inset-0 flex items-center justify-center bg-coral/0 opacity-0 transition-all duration-500 group-hover:bg-ink/20 group-hover:opacity-100">
-                  <InstagramIcon className="size-7 text-cream" />
-                </div>
-              </div>
+              ) : i === 1 ? (
+                <InstagramPostEmbed
+                  embedUrl="https://www.instagram.com/p/DXsbQTfDtvU/embed/"
+                  previewAlt="Reel de Isabella con outfit azul en tienda"
+                  previewSrc={cloudinaryImage('/images/isabella-reel-dxsbqtfdtu.jpg')}
+                  toggleId="isabella-reel-dxsbqtfdtu"
+                />
+              ) : i === 2 ? (
+                <InstagramPostEmbed
+                  embedUrl="https://www.instagram.com/p/DXhJ5cyDnqh/embed/"
+                  previewAlt="Reel de Isabella con pañoleta floral roja"
+                  previewSrc={cloudinaryImage('/images/isabella-reel-dxhj5cydnqh.jpg')}
+                  toggleId="isabella-reel-dxhj5cydnqh"
+                />
+              ) : i === 3 ? (
+                <InstagramPostEmbed
+                  embedUrl="https://www.instagram.com/p/DWz4FBuDGbK/embed/"
+                  previewAlt="Reel de Isabella con outfit azul en sala"
+                  previewSrc={cloudinaryImage('/images/isabella-reel-dwz4fbudgbk.jpg')}
+                  toggleId="isabella-reel-dwz4fbudgbk"
+                />
+              ) : i === 4 ? (
+                <InstagramPostEmbed
+                  embedUrl="https://www.instagram.com/p/DSxSEnRjdSO/embed/"
+                  previewAlt="Reel de Isabella con dos mujeres en exterior"
+                  previewSrc={cloudinaryImage('/images/isabella-reel-dsksenrjdso.jpg')}
+                  toggleId="isabella-reel-dsksenrjdso"
+                />
+              ) : i === 5 ? (
+                <InstagramPostEmbed
+                  embedUrl="https://www.instagram.com/p/DUrHgMNjtCH/embed/"
+                  previewAlt="Reel de Isabella con torta y flores"
+                  previewSrc={cloudinaryImage('/images/isabella-reel-durhgmnjtch.jpg')}
+                  toggleId="isabella-reel-durhgmnjtch"
+                />
+              ) : (
+                <a
+                  href={post.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Ver publicacion de Instagram con #${post.tag}`}
+                  className="group relative block aspect-[9/16] overflow-hidden rounded-sm bg-muted"
+                >
+                  <CommunityImage post={post} />
+                  <div className="absolute inset-0 flex items-center justify-center bg-coral/0 opacity-0 transition-all duration-500 group-hover:bg-ink/25 group-hover:opacity-100">
+                    <InstagramIcon className="size-7 text-cream" />
+                  </div>
+                  <span className="absolute bottom-3 left-3 max-w-[calc(100%-1.5rem)] truncate bg-cream/90 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-luxe text-ink opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+                    #{post.tag}
+                  </span>
+                </a>
+              )}
             </Reveal>
           ))}
         </div>

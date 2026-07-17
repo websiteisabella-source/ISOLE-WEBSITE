@@ -1,3 +1,5 @@
+import { cloudinaryImage } from './cloudinary-assets'
+
 export type Product = {
   slug: string
   name: string
@@ -19,13 +21,13 @@ export const products: Product[] = [
       'Un vestido de lino que cae como la última luz de la tarde. Pensado para moverse con el viento y abrazar el cuerpo sin pedir permiso.',
     fabric: 'Lino 100% natural',
     colors: ['Atardecer Coral', 'Nude'],
-    product: '/images/arrival-1-product.png',
-    model: '/images/arrival-1-model.png',
+    product: cloudinaryImage('/images/arrival-1-product.png'),
+    model: cloudinaryImage('/images/arrival-1-model.png'),
     gallery: [
-      '/images/arrival-1-model.png',
-      '/images/detail-back.png',
-      '/images/detail-texture.png',
-      '/images/detail-lifestyle.png',
+      cloudinaryImage('/images/arrival-1-model.png'),
+      cloudinaryImage('/images/detail-back.png'),
+      cloudinaryImage('/images/detail-texture.png'),
+      cloudinaryImage('/images/detail-lifestyle.png'),
     ],
   },
   {
@@ -36,12 +38,12 @@ export const products: Product[] = [
       'La calma de la mañana hecha prenda. Una blusa de seda que se desliza sobre la piel con una elegancia silenciosa y atemporal.',
     fabric: 'Seda lavada',
     colors: ['Crema', 'Pétalo Rosa'],
-    product: '/images/arrival-2-product.png',
-    model: '/images/arrival-2-model.png',
+    product: cloudinaryImage('/images/arrival-2-product.png'),
+    model: cloudinaryImage('/images/arrival-2-model.png'),
     gallery: [
-      '/images/arrival-2-model.png',
-      '/images/arrival-2-product.png',
-      '/images/editorial-story.png',
+      cloudinaryImage('/images/arrival-2-model.png'),
+      cloudinaryImage('/images/arrival-2-product.png'),
+      cloudinaryImage('/images/editorial-story.png'),
     ],
   },
   {
@@ -52,12 +54,12 @@ export const products: Product[] = [
       'Un slip dress de satén en tono pétalo, romántico y desnudo. Hecho para las noches cálidas y los momentos que se quedan.',
     fabric: 'Satén de viscosa',
     colors: ['Pétalo Rosa', 'Lavanda Viva'],
-    product: '/images/arrival-3-product.png',
-    model: '/images/arrival-3-model.png',
+    product: cloudinaryImage('/images/arrival-3-product.png'),
+    model: cloudinaryImage('/images/arrival-3-model.png'),
     gallery: [
-      '/images/arrival-3-model.png',
-      '/images/collection-3.png',
-      '/images/collection-4.png',
+      cloudinaryImage('/images/arrival-3-model.png'),
+      cloudinaryImage('/images/collection-3.png'),
+      cloudinaryImage('/images/collection-4.png'),
     ],
   },
 ]

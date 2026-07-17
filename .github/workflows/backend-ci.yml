@@ -1,0 +1,57 @@
+name: Backend CI
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.adminCommand(\"ping\").ok'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      APP_NAME: ISOLE API
+      ENVIRONMENT: testing
+      DEBUG: "false"
+      HOST: 0.0.0.0
+      PORT: "8000"
+      MONGODB_URI: mongodb://localhost:27017
+      DATABASE_NAME: isole_showroom_test
+      JWT_SECRET_KEY: test-access-secret-key-with-more-than-32-characters
+      JWT_REFRESH_SECRET_KEY: test-refresh-secret-key-with-more-than-32-characters
+      JWT_ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: "30"
+      REFRESH_TOKEN_EXPIRE_DAYS: "14"
+      CLOUDINARY_CLOUD_NAME: ""
+      CLOUDINARY_API_KEY: ""
+      CLOUDINARY_API_SECRET: ""
+      CORS_ORIGINS: http://localhost:3000
+      LOG_LEVEL: INFO
+      RUN_MONGODB_TESTS: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Lint
+        run: ruff check app
+      - name: Format check
+        run: black --check app main.py
+      - name: Type check
+        run: mypy app main.py
+      - name: Test
+        run: pytest
+

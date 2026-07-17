@@ -2,6 +2,9 @@ import Image from 'next/image'
 import { CtaLink } from './cta-button'
 import { FlowerIcon } from './icons'
 import { Reveal } from './reveal'
+import { cloudinaryImage } from '@/lib/cloudinary-assets'
+
+const editorialImage = cloudinaryImage('/images/editorial-story.png')
 
 export function EditorialSection() {
   return (
@@ -11,7 +14,7 @@ export function EditorialSection() {
     >
       <Reveal className="relative aspect-[4/5] overflow-hidden rounded-sm">
         <Image
-          src="/images/editorial-story.png"
+          src={editorialImage}
           alt="Detalle de manos ajustando una blusa de seda crema"
           fill
           sizes="(max-width: 768px) 100vw, 50vw"

@@ -2,7 +2,8 @@ const DEFAULT_WHATSAPP_NUMBER = '521234567890'
 
 export const SITE_NAME = 'ISOLÉ'
 export const INSTAGRAM_URL =
-  process.env.NEXT_PUBLIC_INSTAGRAM_URL ?? 'https://instagram.com/isole.studio'
+  process.env.NEXT_PUBLIC_INSTAGRAM_URL ??
+  'https://www.instagram.com/isabellla.co/'
 
 // Optional looping, muted hero video. When set, the Hero plays it on loop
 // over the poster image. Leave unset to show the still image only.

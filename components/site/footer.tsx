@@ -62,10 +62,12 @@ export function Footer() {
               <InstagramIcon className="size-4" /> Instagram
             </a>
             <a
-              href="mailto:hola@isole.studio"
+              href={INSTAGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-sm text-cream/70 transition-colors hover:text-coral"
             >
-              hola@isole.studio
+              Isabella
             </a>
           </FooterCol>
 

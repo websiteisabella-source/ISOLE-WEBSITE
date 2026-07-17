@@ -3,6 +3,9 @@
 import Image from 'next/image'
 import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'motion/react'
+import { cloudinaryImage } from '@/lib/cloudinary-assets'
+
+const manifestoImage = cloudinaryImage('/images/manifesto.png')
 
 export function QuoteSection() {
   const ref = useRef<HTMLDivElement>(null)
@@ -20,7 +23,7 @@ export function QuoteSection() {
     >
       <motion.div style={{ y }} className="absolute inset-0 scale-110">
         <Image
-          src="/images/manifesto.png"
+          src={manifestoImage}
           alt="Mujer caminando entre hierba dorada al atardecer"
           fill
           sizes="100vw"
@@ -30,7 +33,7 @@ export function QuoteSection() {
       </motion.div>
 
       <motion.blockquote
-        initial={{ opacity: 0, y: 30 }}
+        initial={false}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-100px' }}
         transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}

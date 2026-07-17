@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=70.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 100
+target-version = ["py313"]
+include = '\.pyi?$'
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+src = ["app"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "ASYNC", "S"]
+ignore = [
+  "S101",
+  "B008",
+  "S104",
+  "S105",
+  "S106",
+  "UP046"
+]
+
+[tool.mypy]
+python_version = "3.13"
+plugins = ["pydantic.mypy"]
+strict = false
+ignore_missing_imports = true
+warn_unused_ignores = true
+warn_return_any = false
+check_untyped_defs = true
+exclude = ["node_modules", ".next", "out", "dist"]
+disable_error_code = [
+  "arg-type",
+  "type-arg",
+  "no-any-return"
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["app/tests"]
+addopts = [
+  "--cov=app.auth",
+  "--cov=app.core",
+  "--cov=app.validators.common",
+  "--cov=app.validators.security",
+  "--cov=app.config.settings",
+  "--cov=app.models.auth_token",
+  "--cov=app.schemas.base",
+  "--cov-report=term-missing",
+  "--cov-fail-under=90"
+]
+markers = [
+  "integration: requires external services such as MongoDB or Cloudinary"
+]
+
+[tool.coverage.run]
+branch = true
+omit = [
+  "app/tests/*"
+]

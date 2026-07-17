@@ -46,6 +46,15 @@ export const metadata: Metadata = {
   title: `${SITE_NAME} | Digital Showroom`,
   description:
     'ISOLÉ is a digital showroom and interactive lookbook. Romantic, bold and elegant pieces made to be felt. Visit our store or reach us on WhatsApp.',
+  icons: {
+    icon: [
+      { url: '/favicon.png?v=transparent', sizes: '32x32', type: 'image/png' },
+      { url: '/icon.png?v=transparent', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-icon.png?v=transparent', sizes: '180x180', type: 'image/png' },
+    ],
+  },
   openGraph: {
     title: `${SITE_NAME} | Digital Showroom`,
     description:

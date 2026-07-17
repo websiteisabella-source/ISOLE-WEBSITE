@@ -1,9 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
-import { AnimatePresence, motion } from 'motion/react'
-import { CloseIcon, HeartSunIcon, MenuIcon } from './icons'
+import { useEffect, useRef, useState } from 'react'
+import { CloseIcon, MenuIcon } from './icons'
+import { cloudinaryImage } from '@/lib/cloudinary-assets'
+
+const logoImage = cloudinaryImage('/images/isole-logo-wordmark.png')
 
 const leftLinks = [
   { label: 'Colecciones', href: '/#colecciones' },
@@ -21,7 +23,7 @@ const allLinks = [...leftLinks, ...rightLinks]
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
-  const [open, setOpen] = useState(false)
+  const menuRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -31,20 +33,18 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : ''
-
-    return () => {
-      document.body.style.overflow = ''
+  const closeMenu = () => {
+    if (menuRef.current) {
+      menuRef.current.checked = false
     }
-  }, [open])
+  }
 
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-700 ease-luxe ${
         scrolled
-          ? 'bg-cream/80 backdrop-blur-md shadow-[0_1px_0_0_rgba(46,37,33,0.06)]'
-          : 'bg-transparent'
+          ? 'bg-cream/90 backdrop-blur-md shadow-[0_1px_0_0_rgba(46,37,33,0.06)]'
+          : 'bg-transparent md:bg-cream/95 md:shadow-[0_1px_0_0_rgba(46,37,33,0.06)]'
       }`}
     >
       <nav
@@ -59,29 +59,66 @@ export function Navbar() {
           ))}
         </ul>
 
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          className="text-ink md:hidden"
-          aria-label="Abrir menú"
-        >
-          <MenuIcon className="size-6" />
-        </button>
+        <div className="md:hidden">
+          <input
+            ref={menuRef}
+            id="mobile-menu-toggle"
+            type="checkbox"
+            className="peer sr-only"
+            aria-hidden="true"
+          />
+          <label
+            htmlFor="mobile-menu-toggle"
+            className="-ml-3 flex size-11 cursor-pointer items-center justify-center text-ink"
+            aria-label="Abrir menu"
+          >
+            <MenuIcon className="size-6" />
+          </label>
+
+          <div className="fixed inset-0 z-[60] hidden flex-col bg-nude peer-checked:flex">
+            <div className="flex h-16 items-center justify-between px-5">
+              <img
+                src={logoImage}
+                alt="ISOLE"
+                className="h-10 w-auto"
+              />
+              <label
+                htmlFor="mobile-menu-toggle"
+                aria-label="Cerrar menu"
+                className="cursor-pointer text-ink"
+              >
+                <CloseIcon className="size-6" />
+              </label>
+            </div>
+            <ul className="flex flex-1 flex-col items-center justify-center gap-7">
+              {allLinks.map((l) => (
+                <li key={l.href}>
+                  <Link
+                    href={l.href}
+                    onClick={closeMenu}
+                    className="font-serif text-3xl text-ink"
+                  >
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
 
         <Link
           href="/"
-          className="flex flex-col items-center gap-1 px-6 text-ink"
-          aria-label="ISOLÉ, ir al inicio"
+          className="flex items-center justify-center px-6"
+          aria-label="ISOLE, ir al inicio"
         >
-          <HeartSunIcon
-            className={`size-5 text-coral transition-all duration-700 ease-luxe md:size-6 ${
-              scrolled ? 'opacity-100' : 'opacity-90'
+          <img
+            src={logoImage}
+            alt=""
+            className={`h-10 w-auto transition-all duration-700 ease-luxe md:h-12 ${
+              scrolled ? 'opacity-100' : 'opacity-95'
             }`}
             aria-hidden="true"
           />
-          <span className="font-serif text-2xl leading-none tracking-[0.32em] md:text-3xl">
-            ISOL&Eacute;
-          </span>
         </Link>
 
         <ul className="hidden flex-1 items-center justify-end gap-8 md:flex">
@@ -94,51 +131,6 @@ export function Navbar() {
 
         <span className="w-6 md:hidden" aria-hidden="true" />
       </nav>
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="fixed inset-0 z-50 flex flex-col bg-nude md:hidden"
-          >
-            <div className="flex h-16 items-center justify-between px-5">
-              <span className="flex items-center gap-2 font-serif text-2xl tracking-[0.32em] text-ink">
-                <HeartSunIcon className="size-5 text-coral" aria-hidden="true" />
-                ISOL&Eacute;
-              </span>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                aria-label="Cerrar menú"
-                className="text-ink"
-              >
-                <CloseIcon className="size-6" />
-              </button>
-            </div>
-            <ul className="flex flex-1 flex-col items-center justify-center gap-7">
-              {allLinks.map((l, i) => (
-                <motion.li
-                  key={l.href}
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.08 * i + 0.1, duration: 0.5 }}
-                >
-                  <Link
-                    href={l.href}
-                    onClick={() => setOpen(false)}
-                    className="font-serif text-3xl text-ink"
-                  >
-                    {l.label}
-                  </Link>
-                </motion.li>
-              ))}
-            </ul>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </header>
   )
 }

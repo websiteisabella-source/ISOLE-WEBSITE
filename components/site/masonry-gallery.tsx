@@ -1,30 +1,31 @@
 import { CollectionCard } from './collection-card'
 import { Reveal } from './reveal'
+import { cloudinaryImage } from '@/lib/cloudinary-assets'
 
 const items = [
   {
-    src: '/images/collection-1.png',
+    src: cloudinaryImage('/images/collection-1.png'),
     alt: 'Mujer con vestido cruzado color crema junto a un muro de piedra',
     label: 'Atardecer',
     caption: 'Colección',
     href: '/#novedades',
   },
   {
-    src: '/images/collection-2.png',
+    src: cloudinaryImage('/images/collection-2.png'),
     alt: 'Prendas de lino dobladas en tonos coral, rosa y crema',
     label: 'Lino Vivo',
     caption: 'Cápsula',
     href: '/#novedades',
   },
   {
-    src: '/images/collection-3.png',
+    src: cloudinaryImage('/images/collection-3.png'),
     alt: 'Mujer reposando sobre sábanas de lino con vestido rosa pétalo',
     label: 'Pétalo',
     caption: 'Edición noche',
     href: '/#novedades',
   },
   {
-    src: '/images/collection-4.png',
+    src: cloudinaryImage('/images/collection-4.png'),
     alt: 'Detalle de joyería dorada sobre prenda de seda coral',
     label: 'Detalles',
     caption: 'Accesorios',
