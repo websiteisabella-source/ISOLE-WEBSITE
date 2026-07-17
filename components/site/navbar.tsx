@@ -2,8 +2,8 @@
 
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
-import { CloseIcon, MenuIcon } from './icons'
 import { cloudinaryImage } from '@/lib/cloudinary-assets'
+import { CloseIcon, MenuIcon } from './icons'
 
 const logoImage = cloudinaryImage('/images/isole-logo-wordmark.png')
 
@@ -23,6 +23,7 @@ const allLinks = [...leftLinks, ...rightLinks]
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
+  const [logoFailed, setLogoFailed] = useState(false)
   const menuRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -52,9 +53,9 @@ export function Navbar() {
         className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 md:h-24 md:px-10"
       >
         <ul className="hidden flex-1 items-center gap-8 md:flex">
-          {leftLinks.map((l) => (
-            <li key={l.href}>
-              <NavItem {...l} />
+          {leftLinks.map((link) => (
+            <li key={link.href}>
+              <NavItem {...link} />
             </li>
           ))}
         </ul>
@@ -70,39 +71,48 @@ export function Navbar() {
           <label
             htmlFor="mobile-menu-toggle"
             className="-ml-3 flex size-11 cursor-pointer items-center justify-center text-ink"
-            aria-label="Abrir menu"
+            aria-label="Abrir menú"
           >
             <MenuIcon className="size-6" />
           </label>
 
-          <div className="fixed inset-0 z-[60] hidden flex-col bg-nude peer-checked:flex">
-            <div className="flex h-20 items-center justify-between px-5">
-              <img
-                src={logoImage}
-                alt="ISOLÉ"
-                className="w-[180px] max-w-[52vw]"
-              />
+          <div className="fixed inset-0 z-[60] hidden min-h-svh flex-col overflow-y-auto bg-cream peer-checked:flex">
+            <div className="flex h-20 shrink-0 items-center justify-between border-b border-coral/15 bg-nude px-5">
+              <span className="brand-subtitle text-4xl leading-none text-coral">
+                ISOLÉ
+              </span>
               <label
                 htmlFor="mobile-menu-toggle"
-                aria-label="Cerrar menu"
-                className="cursor-pointer text-ink"
+                aria-label="Cerrar menú"
+                className="flex size-11 cursor-pointer items-center justify-center rounded-full text-ink transition-colors duration-300 hover:bg-cream/55"
               >
                 <CloseIcon className="size-6" />
               </label>
             </div>
-            <ul className="flex flex-1 flex-col items-center justify-center gap-7">
-              {allLinks.map((l) => (
-                <li key={l.href}>
+
+            <ul className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center px-6 py-10">
+              {allLinks.map((link) => (
+                <li
+                  key={link.href}
+                  className="border-b border-coral/15 last:border-b-0"
+                >
                   <Link
-                    href={l.href}
+                    href={link.href}
                     onClick={closeMenu}
-                    className="font-serif text-3xl text-ink"
+                    className="flex min-h-16 items-center justify-between py-4 font-serif text-3xl leading-none text-ink transition-colors duration-300 hover:text-coral"
                   >
-                    {l.label}
+                    <span>{link.label}</span>
+                    <span className="text-xs font-sans uppercase tracking-[0.18em] text-coral">
+                      Ver
+                    </span>
                   </Link>
                 </li>
               ))}
             </ul>
+
+            <div className="shrink-0 px-6 pb-8 text-center text-[0.68rem] uppercase tracking-luxe text-coral">
+              ISOLÉ
+            </div>
           </div>
         </div>
 
@@ -111,20 +121,32 @@ export function Navbar() {
           className="flex items-center justify-center px-6"
           aria-label="ISOLÉ, ir al inicio"
         >
-          <img
-            src={logoImage}
-            alt=""
-            className={`w-[180px] max-w-[52vw] transition-all duration-700 ease-luxe md:w-[196px] ${
-              scrolled ? 'opacity-100' : 'opacity-95'
-            }`}
-            aria-hidden="true"
-          />
+          {logoFailed ? (
+            <span
+              className={`brand-subtitle text-5xl leading-none text-coral transition-all duration-700 ease-luxe md:text-6xl ${
+                scrolled ? 'opacity-100' : 'opacity-95'
+              }`}
+              aria-hidden="true"
+            >
+              ISOLÉ
+            </span>
+          ) : (
+            <img
+              src={logoImage}
+              alt=""
+              className={`w-[180px] max-w-[52vw] transition-all duration-700 ease-luxe md:w-[196px] ${
+                scrolled ? 'opacity-100' : 'opacity-95'
+              }`}
+              aria-hidden="true"
+              onError={() => setLogoFailed(true)}
+            />
+          )}
         </Link>
 
         <ul className="hidden flex-1 items-center justify-end gap-8 md:flex">
-          {rightLinks.map((l) => (
-            <li key={l.href}>
-              <NavItem {...l} />
+          {rightLinks.map((link) => (
+            <li key={link.href}>
+              <NavItem {...link} />
             </li>
           ))}
         </ul>
