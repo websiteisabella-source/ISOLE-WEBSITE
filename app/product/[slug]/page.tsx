@@ -3,13 +3,18 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { CtaLink } from '@/components/site/cta-button'
 import { Footer } from '@/components/site/footer'
-import { ArrowIcon, FlowerIcon, WhatsAppIcon } from '@/components/site/icons'
+import { ArrowIcon, WhatsAppIcon } from '@/components/site/icons'
 import { Navbar } from '@/components/site/navbar'
 import { ProductCard } from '@/components/site/product-card'
 import { ProductGallery } from '@/components/site/product-gallery'
 import { Reveal } from '@/components/site/reveal'
 import { WhatsAppFloat } from '@/components/site/whatsapp-float'
-import { getProduct, products } from '@/lib/products'
+import {
+  getProduct,
+  getProductImages,
+  getRelatedProducts,
+  products,
+} from '@/lib/products'
 import {
   breadcrumbJsonLd,
   jsonLdScript,
@@ -47,7 +52,7 @@ export async function generateMetadata({
       description: productSeoDescription(product),
       url: productUrl(product),
       type: 'website',
-      images: product.gallery.map((image) => ({
+      images: getProductImages(product).map((image) => ({
         url: image,
         alt: `${product.name} de ${SITE_NAME}`,
       })),
@@ -56,7 +61,7 @@ export async function generateMetadata({
       card: 'summary_large_image',
       title: productSeoTitle(product),
       description: productSeoDescription(product),
-      images: [product.gallery[0]],
+      images: [getProductImages(product)[0]],
     },
   }
 }
@@ -73,7 +78,11 @@ export default async function ProductPage({
     notFound()
   }
 
-  const related = products.filter((p) => p.slug !== product.slug)
+  const related = getRelatedProducts(product)
+  const images = getProductImages(product)
+  const hasDetails = Boolean(
+    product.fabric || product.colors?.length || product.variants?.length,
+  )
   const message = `Hola ${SITE_NAME}, me gustaría consultar la disponibilidad de "${product.name}".`
 
   return (
@@ -90,16 +99,16 @@ export default async function ProductPage({
       <main className="pt-28 md:pt-32">
         <div className="mx-auto max-w-7xl px-5 md:px-10">
           <Link
-            href="/#novedades"
+            href="/catalogo/todos-los-articulos"
             className="inline-flex items-center gap-2 text-[0.7rem] uppercase tracking-[0.18em] text-muted-foreground transition-colors duration-500 hover:text-coral"
           >
             <ArrowIcon className="size-4 rotate-180" />
-            Volver a novedades
+            Volver al catálogo
           </Link>
 
           <div className="mt-8 grid grid-cols-1 gap-10 md:mt-12 md:grid-cols-2 md:gap-16">
             <Reveal>
-              <ProductGallery images={product.gallery} name={product.name} />
+              <ProductGallery images={images} name={product.name} />
             </Reveal>
 
             <Reveal delay={0.1} className="md:py-6">
@@ -110,37 +119,55 @@ export default async function ProductPage({
                 <h1 className="editorial-title mt-4 text-balance text-5xl text-ink md:text-6xl">
                   {product.name}
                 </h1>
-                <p className="mt-7 max-w-md text-base leading-relaxed text-muted-foreground">
-                  {product.description}
-                </p>
+                {product.description && (
+                  <p className="mt-7 max-w-md text-base leading-relaxed text-muted-foreground">
+                    {product.description}
+                  </p>
+                )}
+                {!product.description && (
+                  <p className="mt-7 max-w-md text-base leading-relaxed text-muted-foreground">
+                    Esta pieza ya hace parte del catálogo ISOLÉ. Estamos
+                    completando sus imágenes y detalles para que puedas
+                    descubrirla con la misma calma del showroom.
+                  </p>
+                )}
 
-                <dl className="mt-10 space-y-5 border-t border-border pt-8">
-                  <div className="flex items-start justify-between gap-6">
-                    <dt className="text-[0.7rem] uppercase tracking-[0.18em] text-muted-foreground">
-                      Tejido
-                    </dt>
-                    <dd className="text-right text-sm text-ink">
-                      {product.fabric}
-                    </dd>
-                  </div>
-                  <div className="flex items-start justify-between gap-6 border-t border-border pt-5">
-                    <dt className="text-[0.7rem] uppercase tracking-[0.18em] text-muted-foreground">
-                      Colores
-                    </dt>
-                    <dd className="text-right text-sm text-ink">
-                      {product.colors.join(' / ')}
-                    </dd>
-                  </div>
-                  <div className="flex items-center justify-between gap-6 border-t border-border pt-5">
-                    <dt className="text-[0.7rem] uppercase tracking-[0.18em] text-muted-foreground">
-                      Disponibilidad
-                    </dt>
-                    <dd className="inline-flex items-center gap-2 text-sm text-ink">
-                      <FlowerIcon className="size-4 text-coral" />
-                      Disponible en tienda
-                    </dd>
-                  </div>
-                </dl>
+                {hasDetails && (
+                  <dl className="mt-10 space-y-5 border-t border-border pt-8">
+                    {product.fabric && (
+                      <div className="flex items-start justify-between gap-6">
+                        <dt className="text-[0.7rem] uppercase tracking-[0.18em] text-muted-foreground">
+                          Tejido
+                        </dt>
+                        <dd className="text-right text-sm text-ink">
+                          {product.fabric}
+                        </dd>
+                      </div>
+                    )}
+                    {product.colors?.length && (
+                      <div className="flex items-start justify-between gap-6 border-t border-border pt-5">
+                        <dt className="text-[0.7rem] uppercase tracking-[0.18em] text-muted-foreground">
+                          Colores
+                        </dt>
+                        <dd className="text-right text-sm text-ink">
+                          {product.colors.join(' / ')}
+                        </dd>
+                      </div>
+                    )}
+                    {product.variants?.length && (
+                      <div className="flex items-start justify-between gap-6 border-t border-border pt-5">
+                        <dt className="text-[0.7rem] uppercase tracking-[0.18em] text-muted-foreground">
+                          Variantes
+                        </dt>
+                        <dd className="text-right text-sm text-ink">
+                          {product.variants
+                            .map((variant) => variant.color)
+                            .join(' / ')}
+                        </dd>
+                      </div>
+                    )}
+                  </dl>
+                )}
 
                 <div className="mt-10">
                   <a
@@ -182,8 +209,8 @@ export default async function ProductPage({
             ))}
           </div>
           <div className="mt-14 flex justify-center">
-            <CtaLink href="/#colecciones" variant="outline">
-              Ver toda la colección
+            <CtaLink href="/catalogo/todos-los-articulos" variant="outline">
+              Ver todo el catálogo
             </CtaLink>
           </div>
         </section>

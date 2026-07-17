@@ -16,11 +16,11 @@ router = APIRouter(prefix="/products", tags=["products"])
 @router.post("", status_code=status.HTTP_201_CREATED, summary="Create product")
 async def create_product(
     payload: ProductCreate,
-    _: User = Depends(get_current_admin),
+    admin: User = Depends(get_current_admin),
 ):
     """Create a product. Admin only."""
 
-    data = await ProductService().create_product(payload)
+    data = await ProductService().create_product(payload, admin_id=str(admin.id))
     return success_response(
         message="Product created successfully",
         data=data,
@@ -55,9 +55,9 @@ async def list_products(
 
 @router.get("/{product_id}", summary="Get product")
 async def get_product(product_id: str):
-    """Get a product by id."""
+    """Get a public product by id."""
 
-    data = await ProductService().get_product(product_id)
+    data = await ProductService().get_public_product(product_id)
     return success_response(message="Product retrieved successfully", data=data)
 
 
@@ -65,11 +65,15 @@ async def get_product(product_id: str):
 async def update_product(
     product_id: str,
     payload: ProductUpdate,
-    _: User = Depends(get_current_admin),
+    admin: User = Depends(get_current_admin),
 ):
     """Update a product. Admin only."""
 
-    data = await ProductService().update_product(product_id, payload)
+    data = await ProductService().update_product(
+        product_id,
+        payload,
+        admin_id=str(admin.id),
+    )
     return success_response(message="Product updated successfully", data=data)
 
 

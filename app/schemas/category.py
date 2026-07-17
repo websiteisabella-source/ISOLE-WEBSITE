@@ -2,18 +2,23 @@
 
 from pydantic import BaseModel, Field, field_validator
 
+from app.core.enums import CatalogGroupKind
 from app.schemas.base import TimestampedRead
 from app.validators.common import validate_slug
 from app.validators.security import sanitize_text
 
 
 class CategoryCreate(BaseModel):
-    """Payload to create a category."""
+    """Payload to create a category or collection."""
 
     name: str = Field(min_length=1, max_length=120)
     slug: str = Field(min_length=1, max_length=140)
     description: str | None = Field(default=None, max_length=500)
     parent_id: str | None = None
+    kind: CatalogGroupKind = CatalogGroupKind.CLOTHING_TYPE
+    cover_image_id: str | None = None
+    sort_order: int = 0
+    is_active: bool = True
 
     @field_validator("name", "description")
     @classmethod
@@ -31,12 +36,15 @@ class CategoryCreate(BaseModel):
 
 
 class CategoryUpdate(BaseModel):
-    """Payload to update a category."""
+    """Payload to update a category or collection."""
 
     name: str | None = Field(default=None, min_length=1, max_length=120)
     slug: str | None = Field(default=None, min_length=1, max_length=140)
     description: str | None = Field(default=None, max_length=500)
     parent_id: str | None = None
+    kind: CatalogGroupKind | None = None
+    cover_image_id: str | None = None
+    sort_order: int | None = None
     is_active: bool | None = None
 
     @field_validator("name", "description")
@@ -61,3 +69,8 @@ class CategoryRead(TimestampedRead):
     slug: str
     description: str | None = None
     parent_id: str | None = None
+    kind: CatalogGroupKind
+    cover_image_id: str | None = None
+    sort_order: int
+    created_by: str | None = None
+    updated_by: str | None = None

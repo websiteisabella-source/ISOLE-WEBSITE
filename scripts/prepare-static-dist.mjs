@@ -29,6 +29,7 @@ const SECURITY_HEADERS = {
     "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com",
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https://res.cloudinary.com",
+    "media-src 'self' https://res.cloudinary.com",
     "font-src 'self' data:",
     "connect-src 'self' https://vitals.vercel-insights.com https://*.vercel-insights.com",
     "frame-src https://www.instagram.com",

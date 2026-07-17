@@ -1,9 +1,10 @@
 """Category routes."""
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Query, status
 
 from app.api.v1.dependencies.auth import get_current_admin
 from app.api.v1.dependencies.pagination import get_pagination
+from app.core.enums import CatalogGroupKind
 from app.core.responses import success_response
 from app.models.user import User
 from app.schemas.base import PaginationParams
@@ -16,11 +17,11 @@ router = APIRouter(prefix="/categories", tags=["categories"])
 @router.post("", status_code=status.HTTP_201_CREATED, summary="Create category")
 async def create_category(
     payload: CategoryCreate,
-    _: User = Depends(get_current_admin),
+    admin: User = Depends(get_current_admin),
 ):
     """Create a category. Admin only."""
 
-    data = await CategoryService().create_category(payload)
+    data = await CategoryService().create_category(payload, admin_id=str(admin.id))
     return success_response(
         message="Category created successfully",
         data=data,
@@ -29,12 +30,17 @@ async def create_category(
 
 
 @router.get("", summary="List categories")
-async def list_categories(pagination: PaginationParams = Depends(get_pagination)):
-    """List categories."""
+async def list_categories(
+    pagination: PaginationParams = Depends(get_pagination),
+    kind: CatalogGroupKind | None = Query(default=None),
+):
+    """List active categories."""
 
     items, total = await CategoryService().list_categories(
         skip=pagination.skip,
         limit=pagination.page_size,
+        kind=kind,
+        active_only=True,
     )
     return success_response(
         message="Categories retrieved successfully",
@@ -59,11 +65,15 @@ async def get_category(category_id: str):
 async def update_category(
     category_id: str,
     payload: CategoryUpdate,
-    _: User = Depends(get_current_admin),
+    admin: User = Depends(get_current_admin),
 ):
     """Update a category. Admin only."""
 
-    data = await CategoryService().update_category(category_id, payload)
+    data = await CategoryService().update_category(
+        category_id,
+        payload,
+        admin_id=str(admin.id),
+    )
     return success_response(message="Category updated successfully", data=data)
 
 

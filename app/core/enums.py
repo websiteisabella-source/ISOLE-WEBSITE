@@ -21,3 +21,18 @@ class ResourceType(StrEnum):
     """Cloudinary resource types used by this API."""
 
     IMAGE = "image"
+
+
+class CatalogGroupKind(StrEnum):
+    """Supported catalog grouping types."""
+
+    COLLECTION = "collection"
+    CLOTHING_TYPE = "clothing_type"
+
+
+class ProductStatus(StrEnum):
+    """Product publication states."""
+
+    DRAFT = "draft"
+    PUBLISHED = "published"
+    ARCHIVED = "archived"

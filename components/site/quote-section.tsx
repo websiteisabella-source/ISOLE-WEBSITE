@@ -1,14 +1,12 @@
 'use client'
 
-import Image from 'next/image'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { motion, useScroll, useTransform } from 'motion/react'
-import { cloudinaryImage } from '@/lib/cloudinary-assets'
-
-const manifestoImage = cloudinaryImage('/images/manifesto.png')
+import { cloudinaryVideos } from '@/lib/cloudinary-videos'
 
 export function QuoteSection() {
   const ref = useRef<HTMLDivElement>(null)
+  const [videoSrc, setVideoSrc] = useState<string>(cloudinaryVideos.showroomSummer)
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start end', 'end start'],
@@ -22,12 +20,16 @@ export function QuoteSection() {
       className="relative grain flex min-h-[90svh] items-center justify-center overflow-hidden px-5 py-32 md:px-10"
     >
       <motion.div style={{ y }} className="absolute inset-0 scale-110">
-        <Image
-          src={manifestoImage}
-          alt="Mujer caminando entre hierba dorada al atardecer"
-          fill
-          sizes="100vw"
-          className="object-cover"
+        <video
+          className="size-full object-cover"
+          src={videoSrc}
+          aria-label="Video de temporada de vacaciones y verano de ISOLE"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          onError={() => setVideoSrc('/videos/isole-vacaciones-verano.mp4')}
         />
         <div className="absolute inset-0 bg-ink/45" />
       </motion.div>

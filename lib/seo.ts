@@ -41,7 +41,9 @@ export function productSeoTitle(product: Product) {
 }
 
 export function productSeoDescription(product: Product) {
-  return `${product.description} Disponible en showroom ISOLÉ. Consulta colores, tejido y disponibilidad por WhatsApp.`
+  return product.description
+    ? `${product.description} Disponible en showroom ISOLÉ. Consulta colores, tejido y disponibilidad por WhatsApp.`
+    : `Consulta la disponibilidad de ${product.name} en el showroom ISOLÉ por WhatsApp.`
 }
 
 export const organizationJsonLd = {
@@ -79,15 +81,15 @@ export function productJsonLd(product: Product) {
     '@type': 'Product',
     name: product.name,
     description: productSeoDescription(product),
-    image: product.gallery,
     brand: {
       '@type': 'Brand',
       name: SITE_NAME,
     },
     category: product.category,
-    material: product.fabric,
-    color: product.colors,
     url: productUrl(product),
+    ...(product.gallery?.length ? { image: product.gallery } : {}),
+    ...(product.fabric ? { material: product.fabric } : {}),
+    ...(product.colors?.length ? { color: product.colors } : {}),
   }
 }
 
@@ -105,8 +107,8 @@ export function breadcrumbJsonLd(product: Product) {
       {
         '@type': 'ListItem',
         position: 2,
-        name: 'Novedades',
-        item: absoluteUrl('/#novedades'),
+        name: 'Catálogo',
+        item: absoluteUrl('/catalogo/todos-los-articulos'),
       },
       {
         '@type': 'ListItem',

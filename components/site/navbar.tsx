@@ -9,7 +9,7 @@ const logoImage = cloudinaryImage('/images/isole-logo-wordmark.png')
 
 const leftLinks = [
   { label: 'Colecciones', href: '/#colecciones' },
-  { label: 'Novedades', href: '/#novedades' },
+  { label: 'Catálogo', href: '/catalogo/todos-los-articulos' },
   { label: 'Showroom', href: '/#showroom' },
 ]
 

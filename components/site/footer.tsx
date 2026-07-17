@@ -28,7 +28,7 @@ export function Footer() {
         <div className="mt-20 grid grid-cols-2 gap-10 border-t border-coral/25 pt-12 md:grid-cols-4">
           <FooterCol title="Casa">
             <FooterLink href="/#colecciones">Colecciones</FooterLink>
-            <FooterLink href="/#novedades">Novedades</FooterLink>
+            <FooterLink href="/catalogo/todos-los-articulos">Catálogo</FooterLink>
             <FooterLink href="/#historia">Nuestra historia</FooterLink>
             <FooterLink href="/#comunidad">Comunidad</FooterLink>
           </FooterCol>

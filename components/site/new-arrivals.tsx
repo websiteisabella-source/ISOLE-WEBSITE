@@ -1,8 +1,13 @@
+import Link from 'next/link'
 import { ProductCard } from './product-card'
 import { Reveal } from './reveal'
-import { products } from '@/lib/products'
+import { getActiveProducts } from '@/lib/products'
 
 export function NewArrivals() {
+  const featuredProducts = getActiveProducts()
+    .filter((product) => product.product || product.model)
+    .slice(0, 3)
+
   return (
     <section
       id="novedades"
@@ -23,11 +28,20 @@ export function NewArrivals() {
         </Reveal>
 
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 md:gap-7">
-          {products.map((product, i) => (
+          {featuredProducts.map((product, i) => (
             <Reveal key={product.slug} delay={i * 0.12}>
               <ProductCard product={product} />
             </Reveal>
           ))}
+        </div>
+
+        <div className="mt-14 flex justify-center">
+          <Link
+            href="/catalogo/todos-los-articulos"
+            className="inline-flex items-center justify-center rounded-full border border-coral px-8 py-4 text-xs font-medium uppercase tracking-[0.18em] text-coral transition-all duration-500 ease-luxe hover:bg-coral hover:text-primary-foreground"
+          >
+            Explorar catálogo completo
+          </Link>
         </div>
       </div>
     </section>
