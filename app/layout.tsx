@@ -2,7 +2,16 @@ import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Quicksand } from 'next/font/google'
 import localFont from 'next/font/local'
-import { SITE_NAME } from '@/lib/site'
+import {
+  HOME_DESCRIPTION,
+  HOME_KEYWORDS,
+  HOME_TITLE,
+  OG_IMAGE,
+  organizationJsonLd,
+  websiteJsonLd,
+  jsonLdScript,
+} from '@/lib/seo'
+import { absoluteUrl, SITE_NAME, SITE_URL } from '@/lib/site'
 import './globals.css'
 
 const sans = Quicksand({
@@ -35,9 +44,17 @@ const poetry = localFont({
 })
 
 export const metadata: Metadata = {
-  title: `${SITE_NAME} | Digital Showroom`,
-  description:
-    'ISOLÉ is a digital showroom and interactive lookbook. Romantic, bold and elegant pieces made to be felt. Visit our store or reach us on WhatsApp.',
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: HOME_TITLE,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: HOME_DESCRIPTION,
+  keywords: HOME_KEYWORDS,
+  alternates: {
+    canonical: absoluteUrl('/'),
+  },
+  category: 'fashion',
   icons: {
     icon: [
       { url: '/favicon.png?v=transparent', sizes: '32x32', type: 'image/png' },
@@ -48,10 +65,26 @@ export const metadata: Metadata = {
     ],
   },
   openGraph: {
-    title: `${SITE_NAME} | Digital Showroom`,
-    description:
-      'An editorial lookbook of romantic, elegant and natural pieces. Discover the collection.',
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+    url: absoluteUrl('/'),
+    siteName: SITE_NAME,
+    locale: 'es_CO',
     type: 'website',
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: `${SITE_NAME} showroom de ropa femenina natural`,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+    images: [OG_IMAGE],
   },
 }
 
@@ -73,6 +106,14 @@ export default function RootLayout({
       <body
         className={`${tanPearl.variable} ${poetry.variable} font-sans antialiased`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={jsonLdScript(organizationJsonLd)}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={jsonLdScript(websiteJsonLd)}
+        />
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

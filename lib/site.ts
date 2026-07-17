@@ -1,6 +1,9 @@
 const DEFAULT_WHATSAPP_NUMBER = '521234567890'
 
 export const SITE_NAME = 'ISOLÉ'
+export const SITE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.tu-dominio.com'
+).replace(/\/$/, '')
 export const INSTAGRAM_URL =
   process.env.NEXT_PUBLIC_INSTAGRAM_URL ??
   'https://www.instagram.com/isabellla.co/'
@@ -17,4 +20,8 @@ export const WHATSAPP_NUMBER =
 
 export function whatsappLink(message: string) {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`
+}
+
+export function absoluteUrl(path = '/') {
+  return new URL(path, `${SITE_URL}/`).toString()
 }

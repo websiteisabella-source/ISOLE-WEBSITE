@@ -28,6 +28,27 @@ const mimeTypes = new Map([
   [".woff2", "font/woff2"],
 ])
 
+const securityHeaders = {
+  "Content-Security-Policy": [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob: https://res.cloudinary.com",
+    "font-src 'self' data:",
+    "connect-src 'self' https://vitals.vercel-insights.com https://*.vercel-insights.com",
+    "frame-src https://www.instagram.com",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self' https://wa.me",
+    "object-src 'none'",
+  ].join("; "),
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+  "Cross-Origin-Opener-Policy": "same-origin",
+}
+
 function toSafeFilePath(pathname) {
   const decodedPath = decodeURIComponent(pathname)
   const normalizedPath = normalize(decodedPath).replace(/^([/\\])+/, "")
@@ -72,6 +93,7 @@ function sendFile(response, filePath, statusCode = 200) {
 
   response.writeHead(statusCode, {
     "Content-Type": contentType,
+    ...securityHeaders,
   })
 
   createReadStream(filePath).pipe(response)

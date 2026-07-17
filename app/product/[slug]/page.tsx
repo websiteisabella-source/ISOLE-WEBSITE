@@ -10,6 +10,14 @@ import { ProductGallery } from '@/components/site/product-gallery'
 import { Reveal } from '@/components/site/reveal'
 import { WhatsAppFloat } from '@/components/site/whatsapp-float'
 import { getProduct, products } from '@/lib/products'
+import {
+  breadcrumbJsonLd,
+  jsonLdScript,
+  productJsonLd,
+  productSeoDescription,
+  productSeoTitle,
+  productUrl,
+} from '@/lib/seo'
 import { SITE_NAME, whatsappLink } from '@/lib/site'
 
 export function generateStaticParams() {
@@ -29,8 +37,27 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${product.name} | ${SITE_NAME}`,
-    description: product.description,
+    title: productSeoTitle(product),
+    description: productSeoDescription(product),
+    alternates: {
+      canonical: productUrl(product),
+    },
+    openGraph: {
+      title: productSeoTitle(product),
+      description: productSeoDescription(product),
+      url: productUrl(product),
+      type: 'website',
+      images: product.gallery.map((image) => ({
+        url: image,
+        alt: `${product.name} de ${SITE_NAME}`,
+      })),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: productSeoTitle(product),
+      description: productSeoDescription(product),
+      images: [product.gallery[0]],
+    },
   }
 }
 
@@ -51,6 +78,14 @@ export default async function ProductPage({
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLdScript(productJsonLd(product))}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLdScript(breadcrumbJsonLd(product))}
+      />
       <Navbar />
       <main className="pt-28 md:pt-32">
         <div className="mx-auto max-w-7xl px-5 md:px-10">

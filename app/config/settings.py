@@ -25,6 +25,7 @@ class Settings(BaseSettings):
         alias="ENVIRONMENT",
     )
     debug: bool = Field(default=False, alias="DEBUG")
+    api_docs_enabled: bool = Field(default=False, alias="API_DOCS_ENABLED")
     host: str = Field(default="0.0.0.0", alias="HOST")
     port: int = Field(default=8000, alias="PORT", ge=1, le=65535)
 
@@ -72,6 +73,12 @@ class Settings(BaseSettings):
         alias="RATE_LIMIT_WINDOW_SECONDS",
         ge=1,
     )
+    auth_rate_limit_requests: int = Field(default=10, alias="AUTH_RATE_LIMIT_REQUESTS", ge=1)
+    auth_rate_limit_window_seconds: int = Field(
+        default=300,
+        alias="AUTH_RATE_LIMIT_WINDOW_SECONDS",
+        ge=1,
+    )
     max_upload_size_mb: int = Field(default=10, alias="MAX_UPLOAD_SIZE_MB", ge=1)
 
     @field_validator("cors_origins", mode="before")
@@ -92,6 +99,16 @@ class Settings(BaseSettings):
 
         return value.upper()
 
+    @field_validator("jwt_algorithm")
+    @classmethod
+    def validate_jwt_algorithm(cls, value: str) -> str:
+        """Restrict JWT signing to expected HMAC algorithms."""
+
+        algorithm = value.upper()
+        if algorithm not in {"HS256", "HS384", "HS512"}:
+            raise ValueError("JWT_ALGORITHM must be one of HS256, HS384, or HS512")
+        return algorithm
+
     @model_validator(mode="after")
     def validate_production_settings(self) -> "Settings":
         """Reject unsafe production configuration."""
@@ -100,14 +117,24 @@ class Settings(BaseSettings):
         if self.environment == "production":
             access_secret = self.jwt_secret_key.get_secret_value()
             refresh_secret = self.jwt_refresh_secret_key.get_secret_value()
+            if self.debug:
+                raise ValueError("DEBUG must be false in production")
+            if self.api_docs_enabled:
+                raise ValueError("API_DOCS_ENABLED must be false in production")
             if "change-me" in access_secret or len(access_secret) < 32:
                 raise ValueError("JWT_SECRET_KEY must be a strong production secret")
             if "change-me" in refresh_secret or len(refresh_secret) < 32:
                 raise ValueError("JWT_REFRESH_SECRET_KEY must be a strong production secret")
+            if access_secret == refresh_secret:
+                raise ValueError("JWT access and refresh secrets must be different")
             if not self.cors_origins:
                 raise ValueError("CORS_ORIGINS must be explicit in production")
             if "*" in self.cors_origins:
                 raise ValueError("Wildcard CORS is not allowed in production")
+            for origin in self.cors_origins:
+                parsed = urlparse(origin)
+                if parsed.scheme != "https" or not parsed.netloc:
+                    raise ValueError("Production CORS origins must be absolute HTTPS URLs")
         return self
 
     def apply_cloudinary_url(self) -> None:

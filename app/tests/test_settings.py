@@ -57,3 +57,37 @@ def test_production_rejects_wildcard_cors() -> None:
             JWT_REFRESH_SECRET_KEY="strong-refresh-secret-key-with-more-than-32-characters",
             CORS_ORIGINS="*",
         )
+
+
+def test_production_rejects_debug_docs_and_http_origins() -> None:
+    """Production settings should reject debug affordances and plain HTTP origins."""
+
+    with pytest.raises(ValidationError):
+        Settings(
+            ENVIRONMENT="production",
+            DEBUG=True,
+            API_DOCS_ENABLED=True,
+            JWT_SECRET_KEY="strong-access-secret-key-with-more-than-32-characters",
+            JWT_REFRESH_SECRET_KEY="strong-refresh-secret-key-with-more-than-32-characters",
+            CORS_ORIGINS="http://example.com",
+        )
+
+
+def test_production_rejects_reused_jwt_secrets() -> None:
+    """Access and refresh tokens should not share a signing secret."""
+
+    shared_secret = "shared-secret-key-with-more-than-32-characters"
+    with pytest.raises(ValidationError):
+        Settings(
+            ENVIRONMENT="production",
+            JWT_SECRET_KEY=shared_secret,
+            JWT_REFRESH_SECRET_KEY=shared_secret,
+            CORS_ORIGINS="https://example.com",
+        )
+
+
+def test_jwt_algorithm_is_restricted() -> None:
+    """Unexpected JWT algorithms should fail settings validation."""
+
+    with pytest.raises(ValidationError):
+        Settings(JWT_ALGORITHM="none")

@@ -13,7 +13,7 @@ import cloudinary as cloudinary_sdk
 from app.config.settings import Settings, get_settings
 from app.exceptions.exceptions import AppException, ValidationAppError
 from app.schemas.base import ErrorDetail
-from app.validators.image import validate_image_upload
+from app.validators.image import validate_cloudinary_folder, validate_image_upload
 
 
 def configure_cloudinary(settings: Settings) -> None:
@@ -58,6 +58,7 @@ class CloudinaryService:
 
         self._ensure_configured()
         validate_image_upload(file, self.settings)
+        folder = validate_cloudinary_folder(folder)
         file_bytes = await file.read()
         if len(file_bytes) > self.settings.max_upload_size_bytes:
             raise ValidationAppError(

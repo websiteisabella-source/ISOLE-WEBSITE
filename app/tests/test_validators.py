@@ -4,6 +4,7 @@ import pytest
 
 from app.exceptions.exceptions import ValidationAppError
 from app.validators.common import validate_password_strength, validate_slug
+from app.validators.image import validate_cloudinary_folder
 from app.validators.security import reject_nosql_injection, sanitize_text
 
 
@@ -42,3 +43,12 @@ def test_validates_slug_format() -> None:
     assert validate_slug("isole-dress-1") == "isole-dress-1"
     with pytest.raises(ValueError):
         validate_slug("ISOLE Dress")
+
+
+def test_validates_cloudinary_folder_names() -> None:
+    """Upload folders should be normalized and constrained."""
+
+    assert validate_cloudinary_folder(" /showroom/new-arrivals ") == "showroom/new-arrivals"
+    assert validate_cloudinary_folder(" ") == "uploads"
+    with pytest.raises(ValidationAppError):
+        validate_cloudinary_folder("../secrets")

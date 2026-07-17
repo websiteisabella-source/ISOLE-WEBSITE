@@ -15,6 +15,8 @@ class SecuritySettings(BaseModel):
     refresh_token_expire_days: int
     rate_limit_requests: int
     rate_limit_window_seconds: int
+    auth_rate_limit_requests: int
+    auth_rate_limit_window_seconds: int
 
 
 def get_security_settings() -> SecuritySettings:
@@ -29,4 +31,6 @@ def get_security_settings() -> SecuritySettings:
         refresh_token_expire_days=settings.refresh_token_expire_days,
         rate_limit_requests=settings.rate_limit_requests,
         rate_limit_window_seconds=settings.rate_limit_window_seconds,
+        auth_rate_limit_requests=settings.auth_rate_limit_requests,
+        auth_rate_limit_window_seconds=settings.auth_rate_limit_window_seconds,
     )
