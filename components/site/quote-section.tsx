@@ -17,7 +17,7 @@ export function QuoteSection() {
     <section
       id="showroom"
       ref={ref}
-      className="relative grain flex min-h-[90svh] items-center justify-center overflow-hidden px-5 py-32 md:px-10"
+      className="relative grain flex min-h-[78svh] items-center justify-center overflow-hidden px-5 py-20 md:min-h-[90svh] md:px-10 md:py-32"
     >
       <motion.div style={{ y }} className="absolute inset-0 scale-110">
         <video

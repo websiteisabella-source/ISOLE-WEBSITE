@@ -11,7 +11,7 @@ export function NewArrivals() {
   return (
     <section
       id="novedades"
-      className="px-5 pt-16 pb-8 md:px-10 md:py-32"
+      className="px-5 pt-12 pb-0 md:px-10 md:py-32"
     >
       <div className="mx-auto max-w-7xl">
         <Reveal className="mb-14 text-center">
@@ -35,7 +35,7 @@ export function NewArrivals() {
           ))}
         </div>
 
-        <div className="mt-14 flex justify-center">
+        <div className="mt-7 hidden justify-center md:mt-14 md:flex">
           <Link
             href="/catalogo/todos-los-articulos"
             className="inline-flex items-center justify-center rounded-full border border-coral px-8 py-4 text-xs font-medium uppercase tracking-[0.18em] text-coral transition-all duration-500 ease-luxe hover:bg-coral hover:text-primary-foreground"
