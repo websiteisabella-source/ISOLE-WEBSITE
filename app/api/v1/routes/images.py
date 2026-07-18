@@ -2,11 +2,7 @@
 
 from fastapi import APIRouter, Depends, File, Form, UploadFile, status
 
-from app.api.v1.dependencies.auth import (
-    get_current_admin,
-    get_current_user,
-    require_permission,
-)
+from app.api.v1.dependencies.auth import get_current_admin
 from app.api.v1.dependencies.pagination import get_pagination
 from app.core.responses import success_response
 from app.models.user import User
@@ -21,7 +17,7 @@ router = APIRouter(prefix="/images", tags=["images"])
 async def upload_image(
     file: UploadFile = File(...),
     folder: str = Form(default="uploads"),
-    user: User = Depends(require_permission("images:upload")),
+    user: User = Depends(get_current_admin),
 ):
     """Upload an image to Cloudinary and store metadata in MongoDB."""
 
@@ -40,7 +36,7 @@ async def upload_image(
 @router.get("", summary="List images")
 async def list_images(
     pagination: PaginationParams = Depends(get_pagination),
-    _: User = Depends(require_permission("images:read")),
+    _: User = Depends(get_current_admin),
 ):
     """List stored image metadata."""
 
@@ -62,7 +58,7 @@ async def list_images(
 @router.get("/{image_id}", summary="Get image")
 async def get_image(
     image_id: str,
-    _: User = Depends(get_current_user),
+    _: User = Depends(get_current_admin),
 ):
     """Get stored image metadata."""
 
@@ -97,7 +93,7 @@ async def replace_image(
 @router.get("/{image_id}/signed-url", summary="Generate signed image URL")
 async def signed_url(
     image_id: str,
-    _: User = Depends(get_current_user),
+    _: User = Depends(get_current_admin),
 ):
     """Generate a signed Cloudinary delivery URL."""
 

@@ -1,6 +1,6 @@
 """Image schemas."""
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.core.enums import ResourceType
 from app.schemas.base import TimestampedRead
@@ -24,6 +24,8 @@ class ImageRead(TimestampedRead):
 
 class ImageUpdate(BaseModel):
     """Editable image metadata."""
+
+    model_config = ConfigDict(extra="forbid")
 
     folder: str | None = Field(default=None, min_length=1, max_length=120)
 

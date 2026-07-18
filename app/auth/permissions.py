@@ -8,8 +8,6 @@ ROLE_PERMISSIONS: dict[UserRole, set[str]] = {
         "profile:read",
         "profile:update",
         "profile:change_password",
-        "images:upload",
-        "images:read",
     },
 }
 

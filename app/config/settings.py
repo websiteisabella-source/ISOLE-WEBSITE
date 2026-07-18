@@ -80,6 +80,10 @@ class Settings(BaseSettings):
         ge=1,
     )
     max_upload_size_mb: int = Field(default=10, alias="MAX_UPLOAD_SIZE_MB", ge=1)
+    initial_admin_bootstrap_enabled: bool = Field(
+        default=False,
+        alias="INITIAL_ADMIN_BOOTSTRAP_ENABLED",
+    )
 
     @field_validator("cors_origins", mode="before")
     @classmethod
@@ -121,6 +125,8 @@ class Settings(BaseSettings):
                 raise ValueError("DEBUG must be false in production")
             if self.api_docs_enabled:
                 raise ValueError("API_DOCS_ENABLED must be false in production")
+            if self.initial_admin_bootstrap_enabled:
+                raise ValueError("INITIAL_ADMIN_BOOTSTRAP_ENABLED must be false in production")
             if "change-me" in access_secret or len(access_secret) < 32:
                 raise ValueError("JWT_SECRET_KEY must be a strong production secret")
             if "change-me" in refresh_secret or len(refresh_secret) < 32:

@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.schemas.base import TimestampedRead
 from app.validators.security import reject_nosql_injection, sanitize_text
@@ -12,6 +12,8 @@ SettingPayloadValue = dict[str, Any] | list[Any] | str | int | float | bool | No
 
 class SettingCreate(BaseModel):
     """Payload to create a setting."""
+
+    model_config = ConfigDict(extra="forbid")
 
     key: str = Field(min_length=1, max_length=120)
     value: SettingPayloadValue = None
@@ -36,6 +38,8 @@ class SettingCreate(BaseModel):
 
 class SettingUpdate(BaseModel):
     """Payload to update a setting."""
+
+    model_config = ConfigDict(extra="forbid")
 
     value: SettingPayloadValue = None
     description: str | None = Field(default=None, max_length=500)

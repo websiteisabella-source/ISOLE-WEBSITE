@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Depends, File, Form, UploadFile, status
 
-from app.api.v1.dependencies.auth import require_permission
+from app.api.v1.dependencies.auth import get_current_admin
 from app.core.responses import success_response
 from app.models.user import User
 from app.services.image_service import ImageService
@@ -14,7 +14,7 @@ router = APIRouter(prefix="/uploads", tags=["uploads"])
 async def upload(
     file: UploadFile = File(...),
     folder: str = Form(default="uploads"),
-    user: User = Depends(require_permission("images:upload")),
+    user: User = Depends(get_current_admin),
 ):
     """Upload an image through the uploads endpoint."""
 

@@ -97,6 +97,36 @@ def test_product_payload_allows_inactive_duplicate_variants() -> None:
     assert len(payload.variants) == 2
 
 
+def test_product_payload_rejects_unknown_or_protected_fields() -> None:
+    """Mass-assignment fields from manipulated clients should be rejected."""
+
+    with pytest.raises(ValidationError):
+        ProductUpdate.model_validate({"role": "admin"})
+
+    with pytest.raises(ValidationError):
+        ProductCreate.model_validate(
+            {
+                "name": "Vestido Seguro",
+                "slug": "vestido-seguro",
+                "owner_id": "attacker-controlled",
+            }
+        )
+
+    with pytest.raises(ValidationError):
+        ProductUpdate.model_validate(
+            {
+                "variants": [
+                    {
+                        "color": "Vino",
+                        "size": "M",
+                        "sku": "CH-M-VINO",
+                        "created_by": "attacker-controlled",
+                    },
+                ],
+            }
+        )
+
+
 def test_category_payload_supports_catalog_group_kinds() -> None:
     """Collections and clothing types share the category model."""
 
@@ -109,3 +139,10 @@ def test_category_payload_supports_catalog_group_kinds() -> None:
 
     assert collection.kind == CatalogGroupKind.COLLECTION
     assert update.kind == CatalogGroupKind.CLOTHING_TYPE
+
+
+def test_category_payload_rejects_unknown_fields() -> None:
+    """Manipulated catalog group payloads should not accept extra fields."""
+
+    with pytest.raises(ValidationError):
+        CategoryUpdate.model_validate({"permissions": ["*"]})

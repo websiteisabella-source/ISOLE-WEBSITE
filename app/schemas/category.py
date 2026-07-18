@@ -1,6 +1,6 @@
 """Category schemas."""
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.core.enums import CatalogGroupKind
 from app.schemas.base import TimestampedRead
@@ -10,6 +10,8 @@ from app.validators.security import sanitize_text
 
 class CategoryCreate(BaseModel):
     """Payload to create a category or collection."""
+
+    model_config = ConfigDict(extra="forbid")
 
     name: str = Field(min_length=1, max_length=120)
     slug: str = Field(min_length=1, max_length=140)
@@ -37,6 +39,8 @@ class CategoryCreate(BaseModel):
 
 class CategoryUpdate(BaseModel):
     """Payload to update a category or collection."""
+
+    model_config = ConfigDict(extra="forbid")
 
     name: str | None = Field(default=None, min_length=1, max_length=120)
     slug: str | None = Field(default=None, min_length=1, max_length=140)

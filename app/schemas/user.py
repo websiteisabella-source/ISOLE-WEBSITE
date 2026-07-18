@@ -13,6 +13,8 @@ from app.validators.security import sanitize_text
 class UserBase(BaseModel):
     """Shared user fields."""
 
+    model_config = ConfigDict(extra="forbid")
+
     email: EmailStr
     first_name: str | None = Field(default=None, max_length=80)
     last_name: str | None = Field(default=None, max_length=80)
@@ -41,11 +43,11 @@ class UserCreate(UserBase):
 class UserUpdate(BaseModel):
     """Payload to update a user."""
 
+    model_config = ConfigDict(extra="forbid")
+
     first_name: str | None = Field(default=None, max_length=80)
     last_name: str | None = Field(default=None, max_length=80)
-    role: UserRole | None = None
     is_active: bool | None = None
-    is_verified: bool | None = None
 
     @field_validator("first_name", "last_name")
     @classmethod
@@ -57,6 +59,8 @@ class UserUpdate(BaseModel):
 
 class ProfileUpdate(BaseModel):
     """Payload to update the current user's profile."""
+
+    model_config = ConfigDict(extra="forbid")
 
     first_name: str | None = Field(default=None, max_length=80)
     last_name: str | None = Field(default=None, max_length=80)
@@ -71,6 +75,8 @@ class ProfileUpdate(BaseModel):
 
 class ChangePasswordRequest(BaseModel):
     """Payload to change an authenticated user's password."""
+
+    model_config = ConfigDict(extra="forbid")
 
     current_password: str
     new_password: str = Field(min_length=8, max_length=128)

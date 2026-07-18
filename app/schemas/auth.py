@@ -1,6 +1,6 @@
 """Authentication request and response schemas."""
 
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 from app.schemas.token import TokenPairRead
 from app.schemas.user import UserCreate, UserRead
@@ -21,11 +21,15 @@ class AuthenticatedUserRead(BaseModel):
 class RefreshTokenRequest(BaseModel):
     """Refresh token payload."""
 
+    model_config = ConfigDict(extra="forbid")
+
     refresh_token: str = Field(min_length=20)
 
 
 class LogoutRequest(BaseModel):
     """Logout payload."""
+
+    model_config = ConfigDict(extra="forbid")
 
     refresh_token: str | None = Field(default=None, min_length=20)
 
@@ -33,11 +37,15 @@ class LogoutRequest(BaseModel):
 class PasswordResetRequest(BaseModel):
     """Request a password reset token."""
 
+    model_config = ConfigDict(extra="forbid")
+
     email: EmailStr
 
 
 class PasswordResetConfirm(BaseModel):
     """Reset a password with a token."""
+
+    model_config = ConfigDict(extra="forbid")
 
     token: str = Field(min_length=20)
     new_password: str = Field(min_length=8, max_length=128)
@@ -52,5 +60,7 @@ class PasswordResetConfirm(BaseModel):
 
 class EmailVerificationRequest(BaseModel):
     """Verify an email address with a token."""
+
+    model_config = ConfigDict(extra="forbid")
 
     token: str = Field(min_length=20)

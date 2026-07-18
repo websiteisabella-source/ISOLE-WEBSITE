@@ -50,7 +50,12 @@ class AuthService:
         if await self.users.get_by_email(email):
             raise ConflictError("Email is already registered")
 
-        role = UserRole.ADMIN if await self.users.count() == 0 else UserRole.USER
+        is_first_user = await self.users.count() == 0
+        role = (
+            UserRole.ADMIN
+            if is_first_user and self.settings.initial_admin_bootstrap_enabled
+            else UserRole.USER
+        )
         user = await self.users.create(
             {
                 "email": email,

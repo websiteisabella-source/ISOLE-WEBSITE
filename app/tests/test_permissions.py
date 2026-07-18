@@ -17,3 +17,5 @@ def test_user_permissions_are_limited() -> None:
     assert "profile:read" in permissions_for_role(UserRole.USER)
     assert has_permission(UserRole.USER, "profile:update")
     assert not has_permission(UserRole.USER, "settings:delete")
+    assert not has_permission(UserRole.USER, "images:upload")
+    assert not has_permission(UserRole.USER, "images:read")

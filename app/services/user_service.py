@@ -1,6 +1,5 @@
 """User management service."""
 
-from app.auth.permissions import permissions_for_role
 from app.models.user import User
 from app.repositories.users import UserRepository
 from app.schemas.user import UserUpdate
@@ -30,8 +29,6 @@ class UserService:
         """Update a user."""
 
         update_data = payload.model_dump(exclude_unset=True)
-        if "role" in update_data and update_data["role"] is not None:
-            update_data["permissions"] = permissions_for_role(update_data["role"])
         user = await self.users.update(user_id, update_data)
         return serialize_document(user)
 

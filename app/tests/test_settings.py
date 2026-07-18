@@ -86,6 +86,19 @@ def test_production_rejects_reused_jwt_secrets() -> None:
         )
 
 
+def test_production_rejects_initial_admin_bootstrap() -> None:
+    """Public first-admin bootstrap must not be available in production."""
+
+    with pytest.raises(ValidationError):
+        Settings(
+            ENVIRONMENT="production",
+            JWT_SECRET_KEY="strong-access-secret-key-with-more-than-32-characters",
+            JWT_REFRESH_SECRET_KEY="strong-refresh-secret-key-with-more-than-32-characters",
+            CORS_ORIGINS="https://example.com",
+            INITIAL_ADMIN_BOOTSTRAP_ENABLED=True,
+        )
+
+
 def test_jwt_algorithm_is_restricted() -> None:
     """Unexpected JWT algorithms should fail settings validation."""
 

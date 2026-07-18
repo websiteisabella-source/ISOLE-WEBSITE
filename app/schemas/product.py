@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.core.enums import ProductStatus
 from app.schemas.base import TimestampedRead
@@ -12,6 +12,8 @@ from app.validators.security import reject_nosql_injection, sanitize_text
 
 class ProductVariantPayload(BaseModel):
     """Editable product variant."""
+
+    model_config = ConfigDict(extra="forbid")
 
     color: str | None = Field(default=None, max_length=80)
     size: str | None = Field(default=None, max_length=40)
@@ -30,6 +32,8 @@ class ProductVariantPayload(BaseModel):
 
 class ProductCreate(BaseModel):
     """Payload to create a product."""
+
+    model_config = ConfigDict(extra="forbid")
 
     name: str = Field(min_length=1, max_length=180)
     slug: str = Field(min_length=1, max_length=200)
@@ -85,6 +89,8 @@ class ProductCreate(BaseModel):
 
 class ProductUpdate(BaseModel):
     """Payload to update a product."""
+
+    model_config = ConfigDict(extra="forbid")
 
     name: str | None = Field(default=None, min_length=1, max_length=180)
     slug: str | None = Field(default=None, min_length=1, max_length=200)
