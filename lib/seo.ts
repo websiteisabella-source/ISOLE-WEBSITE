@@ -41,8 +41,9 @@ export function productSeoTitle(product: Product) {
 }
 
 export function productSeoDescription(product: Product) {
-  return product.description
-    ? `${product.description} Disponible en showroom ISOLÉ. Consulta colores, tejido y disponibilidad por WhatsApp.`
+  const description = product.shortDescription ?? product.description
+  return description
+    ? `${description} Disponible en showroom ISOLÉ. Consulta disponibilidad por WhatsApp.`
     : `Consulta la disponibilidad de ${product.name} en el showroom ISOLÉ por WhatsApp.`
 }
 

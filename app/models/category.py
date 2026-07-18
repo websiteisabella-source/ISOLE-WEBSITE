@@ -27,7 +27,9 @@ class Category(BaseDocument):
         use_state_management = True
         indexes = [
             IndexModel([("slug", ASCENDING)], unique=True, name="uq_categories_slug"),
-            IndexModel([("kind", ASCENDING), ("is_active", ASCENDING)], name="idx_categories_kind_state"),
+            IndexModel(
+                [("kind", ASCENDING), ("is_active", ASCENDING)], name="idx_categories_kind_state"
+            ),
             IndexModel([("sort_order", ASCENDING)], name="idx_categories_sort_order"),
             IndexModel([("parent_id", ASCENDING)], name="idx_categories_parent_id"),
             IndexModel([("deleted_at", ASCENDING)], name="idx_categories_deleted_at"),

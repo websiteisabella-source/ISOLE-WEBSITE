@@ -131,11 +131,7 @@ class ProductService:
         """Get a public product by slug."""
 
         product = await self.products.get_by_slug(slug)
-        if (
-            product is None
-            or not product.is_active
-            or product.status != ProductStatus.PUBLISHED
-        ):
+        if product is None or not product.is_active or product.status != ProductStatus.PUBLISHED:
             raise NotFoundError("Product not found")
         return serialize_document(product)
 
@@ -259,11 +255,11 @@ class ProductService:
         if not data.get("slug"):
             errors.append("Falta el slug.")
         if not data.get("description") and not data.get("short_description"):
-            errors.append("Falta una descripcion.")
+            errors.append("Falta una descripción.")
         if not data.get("image_ids") and not data.get("primary_image_id"):
             errors.append("Falta al menos una imagen.")
         if not data.get("collection_ids") and not data.get("clothing_type_ids"):
-            errors.append("Falta una coleccion o tipo de ropa.")
+            errors.append("Falta una colección o tipo de ropa.")
         return errors
 
     async def _validate_references(self, data: dict) -> None:

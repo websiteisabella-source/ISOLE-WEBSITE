@@ -57,7 +57,9 @@ class Product(BaseDocument):
             IndexModel([("category_ids", ASCENDING)], name="idx_products_category_ids"),
             IndexModel([("collection_ids", ASCENDING)], name="idx_products_collection_ids"),
             IndexModel([("clothing_type_ids", ASCENDING)], name="idx_products_clothing_type_ids"),
-            IndexModel([("status", ASCENDING), ("is_active", ASCENDING)], name="idx_products_public_state"),
+            IndexModel(
+                [("status", ASCENDING), ("is_active", ASCENDING)], name="idx_products_public_state"
+            ),
             IndexModel([("sort_order", ASCENDING)], name="idx_products_sort_order"),
             IndexModel([("is_featured", ASCENDING)], name="idx_products_is_featured"),
             IndexModel([("deleted_at", ASCENDING)], name="idx_products_deleted_at"),

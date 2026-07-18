@@ -312,7 +312,7 @@ export function AdminCatalogApp() {
       setProducts(productData.items)
       setGroups(groupData.items)
     } catch (refreshError) {
-      setError(refreshError instanceof Error ? refreshError.message : 'Error cargando catalogo.')
+      setError(refreshError instanceof Error ? refreshError.message : 'Error cargando catálogo.')
     } finally {
       setLoading(false)
     }
@@ -342,7 +342,7 @@ export function AdminCatalogApp() {
       }
       window.localStorage.setItem('isole_admin_token', payload.data.access_token)
       setToken(payload.data.access_token)
-      setNotice('Sesion iniciada.')
+      setNotice('Sesión iniciada.')
     } catch (loginError) {
       setError(loginError instanceof Error ? loginError.message : 'No fue posible iniciar sesion.')
     } finally {
@@ -476,7 +476,7 @@ export function AdminCatalogApp() {
       setNotice(`Producto ${doneLabels[action]}.`)
       await refreshData()
     } catch (actionError) {
-      setError(actionError instanceof Error ? actionError.message : 'Accion no completada.')
+      setError(actionError instanceof Error ? actionError.message : 'Acción no completada.')
     } finally {
       setLoading(false)
     }
@@ -507,10 +507,10 @@ export function AdminCatalogApp() {
           <div>
             <p className="brand-subtitle text-5xl text-coral sm:text-6xl">ISOLE</p>
             <h1 className="editorial-title mt-4 max-w-2xl text-4xl text-ink sm:text-6xl">
-              Administracion del catalogo
+              Administración del catálogo
             </h1>
             <p className="mt-5 max-w-xl text-base leading-7 text-ink/70">
-              Gestiona productos, colecciones, tipos de ropa, variantes e imagenes desde
+              Gestiona productos, colecciones, tipos de ropa, variantes e imágenes desde
               un espacio protegido por el rol administrador.
             </p>
           </div>
@@ -532,7 +532,7 @@ export function AdminCatalogApp() {
               <input className={fieldClass} name="email" type="email" required />
             </label>
             <label className={cn(labelClass, 'mt-4')}>
-              Contrasena
+              Contraseña
               <input className={fieldClass} name="password" type="password" required />
             </label>
             {error && <p className="mt-4 rounded-md bg-coral/10 p-3 text-sm text-coral">{error}</p>}
@@ -552,7 +552,7 @@ export function AdminCatalogApp() {
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
           <div>
             <p className="brand-subtitle text-4xl text-coral">ISOLE</p>
-            <h1 className="editorial-title text-2xl text-ink">Admin catalogo</h1>
+            <h1 className="editorial-title text-2xl text-ink">Admin catálogo</h1>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Button variant="outline" onClick={refreshData} disabled={loading}>
@@ -695,7 +695,7 @@ function SummaryView({
     <>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="brand-subtitle text-4xl text-coral">Catalogo vivo</p>
+          <p className="brand-subtitle text-4xl text-coral">Catálogo vivo</p>
           <h2 className="editorial-title text-3xl text-ink">Resumen operativo</h2>
         </div>
         <Button onClick={onCreateProduct}>
@@ -983,7 +983,7 @@ function ProductEditor({
           />
         </label>
         <label className={cn(labelClass, 'lg:col-span-2')}>
-          Descripcion corta
+          Descripción corta
           <textarea
             className={areaClass}
             value={form.short_description}
@@ -991,7 +991,7 @@ function ProductEditor({
           />
         </label>
         <label className={cn(labelClass, 'lg:col-span-2')}>
-          Descripcion completa
+          Descripción completa
           <textarea
             className={areaClass}
             value={form.description}
@@ -1179,7 +1179,7 @@ function GroupsView({
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="brand-subtitle text-4xl text-coral">{groupName(kind)}</p>
-          <h2 className="editorial-title text-3xl text-ink">Organizacion del catalogo</h2>
+          <h2 className="editorial-title text-3xl text-ink">Organización del catálogo</h2>
         </div>
         <Button onClick={onNew}>
           <Plus className="size-4" />
@@ -1303,7 +1303,7 @@ function GroupEditor({
           />
         </label>
         <label className={cn(labelClass, 'lg:col-span-2')}>
-          Descripcion
+          Descripción
           <textarea
             className={areaClass}
             value={form.description}

@@ -74,11 +74,12 @@ class ProductCreate(BaseModel):
         return value
 
     @model_validator(mode="after")
-    def validate_primary_image(self) -> "ProductCreate":
-        """Ensure primary image belongs to the product image list."""
+    def validate_product_payload(self) -> "ProductCreate":
+        """Ensure image and variant payloads remain consistent."""
 
         if self.primary_image_id and self.primary_image_id not in self.image_ids:
             self.image_ids.append(self.primary_image_id)
+        validate_unique_variants(self.variants)
         return self
 
 
@@ -129,6 +130,14 @@ class ProductUpdate(BaseModel):
             reject_nosql_injection(value, "attributes")
         return value
 
+    @model_validator(mode="after")
+    def validate_variant_payload(self) -> "ProductUpdate":
+        """Reject duplicated variants when variants are included."""
+
+        if self.variants is not None:
+            validate_unique_variants(self.variants)
+        return self
+
 
 class ProductRead(TimestampedRead):
     """Product response."""
@@ -155,3 +164,22 @@ class ProductRead(TimestampedRead):
     sort_order: int
     created_by: str | None = None
     updated_by: str | None = None
+
+
+def validate_unique_variants(variants: list[ProductVariantPayload]) -> None:
+    """Reject duplicate active variants by color, size and SKU."""
+
+    seen: set[tuple[str, str, str]] = set()
+    for variant in variants:
+        if not variant.is_active:
+            continue
+        key = (
+            (variant.color or "").strip().casefold(),
+            (variant.size or "").strip().casefold(),
+            (variant.sku or "").strip().casefold(),
+        )
+        if key == ("", "", ""):
+            continue
+        if key in seen:
+            raise ValueError("Las variantes activas no deben repetirse.")
+        seen.add(key)

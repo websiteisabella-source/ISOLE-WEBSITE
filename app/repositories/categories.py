@@ -32,4 +32,8 @@ class CategoryRepository(BaseRepository[Category]):
             filters["is_active"] = True
         query = self._base_query()
         query.update(filters)
-        return await self.model.find(query).sort(("sort_order", ASCENDING), ("name", ASCENDING)).to_list()
+        return (
+            await self.model.find(query)
+            .sort(("sort_order", ASCENDING), ("name", ASCENDING))
+            .to_list()
+        )

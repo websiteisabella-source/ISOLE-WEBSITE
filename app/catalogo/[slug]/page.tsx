@@ -43,9 +43,10 @@ export async function generateMetadata({
   return {
     title: `${group.name} | Catálogo ${SITE_NAME}`,
     description:
-      group.type === 'aggregate'
+      group.description ??
+      (group.type === 'aggregate'
         ? `Todos los artículos activos del catálogo ${SITE_NAME}.`
-        : `Productos de ${group.name} disponibles en el catálogo ${SITE_NAME}.`,
+        : `Productos de ${group.name} disponibles en el catálogo ${SITE_NAME}.`),
     alternates: {
       canonical: absoluteUrl(`/catalogo/${group.slug}`),
     },
@@ -95,9 +96,10 @@ export default async function CatalogGroupPage({
                   {group.name}
                 </h1>
                 <p className="mt-7 max-w-xl text-sm leading-relaxed text-muted-foreground">
-                  {group.type === 'aggregate'
-                    ? 'Una vista viva del showroom: colecciones, categorías y piezas activas reunidas sin repetir artículos.'
-                    : 'Una selección del catálogo actual organizada para explorar con calma, conservando la estética cálida y expresiva de ISOLÉ.'}
+                  {group.description ??
+                    (group.type === 'aggregate'
+                      ? 'Una vista viva del showroom: colecciones, categorías y piezas activas reunidas sin repetir artículos.'
+                      : 'Una selección del catálogo actual organizada para explorar con calma, conservando la estética cálida y expresiva de ISOLÉ.')}
                 </p>
               </div>
               <div className="flex min-h-64 flex-col justify-end bg-lavender px-6 py-10 text-nude md:px-10">

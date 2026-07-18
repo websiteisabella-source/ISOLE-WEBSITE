@@ -106,11 +106,11 @@ export function LiveCatalogProducts({
             Actualizado desde admin
           </span>
           <h2 className="editorial-title mt-3 text-4xl text-ink md:text-5xl">
-            Catalogo publicado
+            Catálogo publicado
           </h2>
         </div>
         <p className="text-sm text-muted-foreground">
-          {products.length} {products.length === 1 ? 'articulo' : 'articulos'}
+          {products.length} {products.length === 1 ? 'artículo' : 'artículos'}
         </p>
       </div>
       <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 md:gap-7">
@@ -148,14 +148,14 @@ function LiveProductCard({
             {category?.name ?? 'ISOLE'}
           </span>
           <span className="brand-subtitle mt-3 text-4xl text-ink">
-            {product.image_ids.length > 0 ? 'Disponible' : 'Proximamente'}
+            {product.image_ids.length > 0 ? 'Disponible' : 'Próximamente'}
           </span>
         </div>
       </div>
       <div className="mt-5 flex items-baseline justify-between gap-4">
         <h3 className="font-serif text-2xl leading-[1.25] text-ink">{product.name}</h3>
         <span className="text-[0.7rem] uppercase tracking-[0.18em] text-muted-foreground">
-          {category?.name ?? 'Catalogo'}
+          {category?.name ?? 'Catálogo'}
         </span>
       </div>
       {product.short_description && (

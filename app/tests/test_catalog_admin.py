@@ -22,9 +22,9 @@ def test_publication_errors_require_public_fields() -> None:
         }
     )
 
-    assert "Falta una descripcion." in errors
+    assert "Falta una descripción." in errors
     assert "Falta al menos una imagen." in errors
-    assert "Falta una coleccion o tipo de ropa." in errors
+    assert "Falta una colección o tipo de ropa." in errors
 
 
 def test_publication_errors_accept_complete_public_data() -> None:
@@ -62,6 +62,39 @@ def test_product_update_rejects_invalid_slug() -> None:
 
     with pytest.raises(ValidationError):
         ProductUpdate(slug="Vestido Invalido")
+
+
+def test_product_payload_rejects_duplicate_active_variants() -> None:
+    """Active variants must not be repeated by color, size and SKU."""
+
+    with pytest.raises(ValidationError):
+        ProductCreate(
+            name="Pantalón Christina",
+            slug="pantalon-christina",
+            variants=[
+                {"color": "Vino", "size": "M", "sku": "CH-M-VINO"},
+                {"color": "vino", "size": "M", "sku": "CH-M-VINO"},
+            ],
+        )
+
+
+def test_product_payload_allows_inactive_duplicate_variants() -> None:
+    """Inactive variants may remain in history without blocking edits."""
+
+    payload = ProductUpdate(
+        variants=[
+            {"color": "Vino", "size": "M", "sku": "CH-M-VINO"},
+            {
+                "color": "vino",
+                "size": "M",
+                "sku": "CH-M-VINO",
+                "is_active": False,
+            },
+        ],
+    )
+
+    assert payload.variants is not None
+    assert len(payload.variants) == 2
 
 
 def test_category_payload_supports_catalog_group_kinds() -> None:
