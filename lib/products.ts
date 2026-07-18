@@ -1,7 +1,8 @@
 import { cloudinaryImage } from './cloudinary-assets'
 
 export type ProductVariant = {
-  color: string
+  color?: string
+  size?: string
 }
 
 export type Product = {
@@ -12,6 +13,7 @@ export type Product = {
   description?: string
   fabric?: string
   colors?: string[]
+  sizes?: string[]
   product?: string
   model?: string
   gallery?: string[]

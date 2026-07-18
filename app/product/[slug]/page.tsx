@@ -80,10 +80,33 @@ export default async function ProductPage({
 
   const related = getRelatedProducts(product)
   const images = getProductImages(product)
-  const hasDetails = Boolean(
-    product.fabric || product.colors?.length || product.variants?.length,
+  const variantColors =
+    product.variants
+      ?.map((variant) => variant.color)
+      .filter((color): color is string => Boolean(color)) ?? []
+  const variantSizes =
+    product.variants
+      ?.map((variant) => variant.size)
+      .filter((size): size is string => Boolean(size)) ?? []
+  const sizes = product.sizes?.length
+    ? product.sizes
+    : Array.from(new Set(variantSizes))
+  const details = [
+    product.fabric ? { label: 'Tejido', value: product.fabric } : null,
+    product.colors?.length
+      ? { label: 'Colores', value: product.colors.join(' / ') }
+      : null,
+    variantColors.length
+      ? { label: 'Variantes', value: variantColors.join(' / ') }
+      : null,
+    {
+      label: 'Tallas',
+      value: sizes.length ? sizes.join(' / ') : 'Consultar disponibilidad',
+    },
+  ].filter((detail): detail is { label: string; value: string } =>
+    Boolean(detail),
   )
-  const message = `Hola ${SITE_NAME}, me gustaría consultar la disponibilidad de "${product.name}".`
+  const message = `Hola ${SITE_NAME}, me gustaría consultar la disponibilidad y tallas de "${product.name}".`
 
   return (
     <>
@@ -132,42 +155,23 @@ export default async function ProductPage({
                   </p>
                 )}
 
-                {hasDetails && (
-                  <dl className="mt-10 space-y-5 border-t border-border pt-8">
-                    {product.fabric && (
-                      <div className="flex items-start justify-between gap-6">
-                        <dt className="text-[0.7rem] uppercase tracking-[0.18em] text-muted-foreground">
-                          Tejido
-                        </dt>
-                        <dd className="text-right text-sm text-ink">
-                          {product.fabric}
-                        </dd>
-                      </div>
-                    )}
-                    {product.colors?.length && (
-                      <div className="flex items-start justify-between gap-6 border-t border-border pt-5">
-                        <dt className="text-[0.7rem] uppercase tracking-[0.18em] text-muted-foreground">
-                          Colores
-                        </dt>
-                        <dd className="text-right text-sm text-ink">
-                          {product.colors.join(' / ')}
-                        </dd>
-                      </div>
-                    )}
-                    {product.variants?.length && (
-                      <div className="flex items-start justify-between gap-6 border-t border-border pt-5">
-                        <dt className="text-[0.7rem] uppercase tracking-[0.18em] text-muted-foreground">
-                          Variantes
-                        </dt>
-                        <dd className="text-right text-sm text-ink">
-                          {product.variants
-                            .map((variant) => variant.color)
-                            .join(' / ')}
-                        </dd>
-                      </div>
-                    )}
-                  </dl>
-                )}
+                <dl className="mt-10 space-y-5 border-t border-border pt-8">
+                  {details.map((detail, index) => (
+                    <div
+                      key={detail.label}
+                      className={`flex items-start justify-between gap-6 ${
+                        index > 0 ? 'border-t border-border pt-5' : ''
+                      }`}
+                    >
+                      <dt className="text-[0.7rem] uppercase tracking-[0.18em] text-muted-foreground">
+                        {detail.label}
+                      </dt>
+                      <dd className="text-right text-sm text-ink">
+                        {detail.value}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
 
                 <div className="mt-10">
                   <a

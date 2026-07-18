@@ -11,7 +11,7 @@ export function NewArrivals() {
   return (
     <section
       id="novedades"
-      className="px-5 pt-12 pb-0 md:px-10 md:py-32"
+      className="px-5 pt-12 pb-12 md:px-10 md:py-32"
     >
       <div className="mx-auto max-w-7xl">
         <Reveal className="mb-14 text-center">
