@@ -12,7 +12,7 @@ export function EditorialSection() {
       id="historia"
       className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-5 pt-24 pb-8 md:grid-cols-2 md:gap-20 md:px-10 md:py-36"
     >
-      <Reveal className="relative aspect-[4/5] overflow-hidden rounded-sm">
+      <Reveal className="relative aspect-[4/5] overflow-hidden rounded-sm border border-coral/10 shadow-[0_1.25rem_3rem_rgba(46,37,33,0.09)]">
         <Image
           src={editorialImage}
           alt="Detalle de manos ajustando una blusa de seda crema"
@@ -23,8 +23,8 @@ export function EditorialSection() {
       </Reveal>
 
       <Reveal delay={0.15} className="max-w-md">
-        <span className="flex items-center gap-3 text-[0.7rem] uppercase tracking-luxe text-coral">
-          <FlowerIcon className="size-5" />
+        <span className="manual-kicker flex items-center gap-3 text-coral">
+          <FlowerIcon className="size-5 text-lavender" />
           La casa
         </span>
         <h2 className="editorial-title mt-6 text-balance text-4xl text-ink md:text-5xl">
@@ -33,6 +33,10 @@ export function EditorialSection() {
         <p className="brand-subtitle mt-4 text-4xl text-coral">
           luz interior
         </p>
+        <span
+          className="mt-5 block h-1 w-24 rounded-full bg-gradient-to-r from-coral via-petal to-lavender"
+          aria-hidden="true"
+        />
         <p className="mt-7 text-base leading-relaxed text-muted-foreground">
           ISOLÉ es una conversación entre la piel y la tela. Trabajamos con
           materiales nobles, tonos cálidos y siluetas que respiran, creando

@@ -17,7 +17,7 @@ export function QuoteSection() {
     <section
       id="showroom"
       ref={ref}
-      className="relative grain flex min-h-[78svh] items-center justify-center overflow-hidden px-5 py-20 md:min-h-[90svh] md:px-10 md:py-32"
+      className="showroom-manifesto relative grain flex min-h-[78svh] items-center justify-center overflow-hidden px-5 py-20 md:min-h-[90svh] md:px-10 md:py-32"
     >
       <motion.div style={{ y }} className="absolute inset-0 scale-110">
         <video
@@ -31,7 +31,8 @@ export function QuoteSection() {
           preload="auto"
           onError={() => setVideoSrc('/videos/isole-vacaciones-verano.mp4')}
         />
-        <div className="absolute inset-0 bg-ink/45" />
+        <div className="absolute inset-0 bg-ink/42" />
+        <div className="showroom-manifesto__pattern" aria-hidden="true" />
       </motion.div>
 
       <motion.blockquote
@@ -41,6 +42,10 @@ export function QuoteSection() {
         transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
         className="relative max-w-4xl text-center"
       >
+        <span
+          className="manual-isotype-mask showroom-manifesto__isotype"
+          aria-label="Isotipo de ISOLÉ"
+        />
         <p className="text-[0.7rem] uppercase tracking-luxe text-petal">
           Manifiesto
         </p>

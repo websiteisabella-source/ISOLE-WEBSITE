@@ -1,4 +1,3 @@
-import { cloudinaryImage } from './cloudinary-assets'
 import type { Product } from './products'
 import {
   absoluteUrl,
@@ -25,8 +24,8 @@ export const HOME_KEYWORDS = [
   'ISOLÉ',
 ]
 
-export const OG_IMAGE = cloudinaryImage('/images/hero.png')
-export const LOGO_IMAGE = cloudinaryImage('/images/isole-logo-wordmark.png')
+export const OG_IMAGE = absoluteUrl('/images/hero.png')
+export const LOGO_IMAGE = absoluteUrl('/images/isole-logo-wordmark.png')
 
 export function productPath(product: Product) {
   return `/product/${product.slug}`
@@ -77,6 +76,10 @@ export const websiteJsonLd = {
 }
 
 export function productJsonLd(product: Product) {
+  const productImages = product.gallery?.map((image) =>
+    /^https?:\/\//.test(image) ? image : absoluteUrl(image),
+  )
+
   return {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -88,7 +91,7 @@ export function productJsonLd(product: Product) {
     },
     category: product.category,
     url: productUrl(product),
-    ...(product.gallery?.length ? { image: product.gallery } : {}),
+    ...(productImages?.length ? { image: productImages } : {}),
     ...(product.fabric ? { material: product.fabric } : {}),
     ...(product.colors?.length ? { color: product.colors } : {}),
   }

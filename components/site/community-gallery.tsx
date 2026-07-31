@@ -33,7 +33,7 @@ function CommunityImage({ post }: { post: CommunityPost }) {
 
 export function CommunityGallery() {
   return (
-    <section id="comunidad" className="px-5 py-24 md:px-10 md:py-32">
+    <section id="comunidad" className="brand-organic bg-cream/55 px-5 py-24 md:px-10 md:py-32">
       <div className="mx-auto max-w-7xl">
         <Reveal className="mb-12 flex flex-col items-center text-center">
           <span className="text-[0.7rem] uppercase tracking-luxe text-coral">
@@ -45,11 +45,15 @@ export function CommunityGallery() {
           <p className="brand-subtitle mt-3 text-3xl text-coral">
             comunidad ISOLÉ
           </p>
+          <span
+            className="mt-5 block h-1 w-24 rounded-full bg-gradient-to-r from-coral via-petal to-lavender"
+            aria-hidden="true"
+          />
           <a
             href={INSTAGRAM_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-ink transition-colors duration-500 hover:text-coral"
+            className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-coral transition-colors duration-500 hover:text-lavender"
           >
             <InstagramIcon className="size-5" />
             ISOLÉ
@@ -111,10 +115,10 @@ export function CommunityGallery() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`Ver publicacion de Instagram con #${post.tag}`}
-                  className="group relative block aspect-[9/16] overflow-hidden rounded-sm bg-muted"
+                  className="group relative block aspect-[9/16] overflow-hidden rounded-sm border border-coral/10 bg-muted shadow-[0_1rem_2.4rem_rgba(46,37,33,0.08)]"
                 >
                   <CommunityImage post={post} />
-                  <div className="absolute inset-0 flex items-center justify-center bg-coral/0 opacity-0 transition-all duration-500 group-hover:bg-ink/25 group-hover:opacity-100">
+                  <div className="absolute inset-0 flex items-center justify-center bg-coral/0 opacity-0 transition-all duration-500 group-hover:bg-coral/20 group-hover:opacity-100">
                     <InstagramIcon className="size-7 text-cream" />
                   </div>
                   <span className="absolute bottom-3 left-3 max-w-[calc(100%-1.5rem)] truncate bg-cream/90 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-luxe text-ink opacity-0 transition-opacity duration-500 group-hover:opacity-100">

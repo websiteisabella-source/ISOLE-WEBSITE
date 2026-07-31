@@ -34,5 +34,5 @@ export const cloudinaryAssets = {
 export type CloudinaryAssetPath = keyof typeof cloudinaryAssets
 
 export function cloudinaryImage(path: string) {
-  return cloudinaryAssets[path as CloudinaryAssetPath] ?? path
+  return path
 }

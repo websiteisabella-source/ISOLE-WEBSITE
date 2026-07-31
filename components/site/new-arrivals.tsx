@@ -21,6 +21,10 @@ export function NewArrivals() {
           <h2 className="editorial-title mx-auto mt-4 max-w-2xl text-balance text-4xl text-ink md:text-6xl">
             Las piezas que estrenan la estación
           </h2>
+          <span
+            className="mx-auto mt-5 block h-1 w-28 rounded-full bg-gradient-to-r from-coral via-petal to-lavender"
+            aria-hidden="true"
+          />
           <p className="mx-auto mt-6 max-w-md text-sm leading-relaxed text-muted-foreground">
             Pasa el cursor sobre cada pieza para verla cobrar vida. Todas
             disponibles para descubrir en nuestro showroom.
@@ -38,7 +42,7 @@ export function NewArrivals() {
         <div className="mt-7 hidden justify-center md:mt-14 md:flex">
           <Link
             href="/catalogo/todos-los-articulos"
-            className="inline-flex items-center justify-center rounded-full border border-coral px-8 py-4 text-xs font-medium uppercase tracking-[0.18em] text-coral transition-all duration-500 ease-luxe hover:bg-coral hover:text-primary-foreground"
+            className="inline-flex items-center justify-center rounded-full border border-coral bg-coral px-8 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-primary-foreground shadow-[0_0.9rem_2rem_rgba(241,86,58,0.2)] transition-all duration-500 ease-luxe hover:border-lavender hover:bg-lavender"
           >
             Explorar catálogo completo
           </Link>

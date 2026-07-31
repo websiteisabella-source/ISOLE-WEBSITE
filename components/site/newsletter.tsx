@@ -18,7 +18,7 @@ export function Newsletter() {
       </p>
 
       {sent ? (
-        <p className="mt-6 text-sm font-medium text-coral" role="status">
+        <p className="mt-6 text-sm font-semibold text-coral" role="status">
           Gracias. Te escribiremos pronto.
         </p>
       ) : (
@@ -27,7 +27,7 @@ export function Newsletter() {
             e.preventDefault()
             if (email.trim()) setSent(true)
           }}
-          className="mt-6 flex items-center gap-3 border-b border-ink/25 pb-2"
+          className="mt-6 flex min-h-12 items-center gap-3 border-b border-coral/35 pb-2"
         >
           <label htmlFor="newsletter-email" className="sr-only">
             Tu correo electrónico
@@ -44,7 +44,7 @@ export function Newsletter() {
           <button
             type="submit"
             aria-label="Suscribirse"
-            className="text-coral transition-colors duration-500 hover:text-lavender"
+            className="flex size-10 shrink-0 items-center justify-center rounded-full bg-coral text-primary-foreground shadow-[0_0.8rem_1.8rem_rgba(241,86,58,0.18)] transition-colors duration-500 hover:bg-lavender"
           >
             <ArrowIcon className="size-5" />
           </button>

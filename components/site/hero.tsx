@@ -11,15 +11,13 @@ const heroImage = cloudinaryImage('/images/hero.png')
 
 export function Hero() {
   return (
-    <section className="relative h-[100svh] w-full overflow-hidden md:mt-24 md:h-[calc(100svh-6rem)]">
+    <section className="brand-hero relative h-[100svh] w-full overflow-hidden md:mt-24 md:h-[calc(100svh-6rem)]">
       <motion.div
         className="absolute inset-0"
         initial={{ scale: 1.12 }}
         animate={{ scale: 1 }}
         transition={{ duration: 2.4, ease: [0.22, 1, 0.36, 1] }}
       >
-        {/* Poster / fallback still. Always rendered for a fast LCP and as the
-            backdrop while the optional loop video buffers. */}
         <Image
           src={heroImage}
           alt="Mujer con vestido de lino al atardecer en una terraza mediterránea"
@@ -41,15 +39,23 @@ export function Hero() {
             aria-hidden="true"
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-b from-ink/20 via-transparent to-ink/40" />
+        <div className="absolute inset-0 bg-gradient-to-b from-ink/24 via-ink/6 to-ink/48" />
+        <div className="brand-hero__manual-pattern" aria-hidden="true" />
       </motion.div>
 
-      <div className="relative z-10 flex h-full flex-col items-center justify-end pb-20 text-center md:justify-center md:pb-0">
+      <div className="relative z-10 flex h-full flex-col items-center justify-end px-5 pb-20 text-center md:justify-center md:pb-0">
+        <motion.span
+          initial={false}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35, duration: 1 }}
+          className="manual-isotype-mask brand-hero__isotype"
+          aria-label="Isotipo de ISOLÉ"
+        />
         <motion.p
           initial={false}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 1 }}
-          className="mb-5 text-[0.7rem] uppercase tracking-luxe text-cream/90"
+          className="mb-5 text-[0.7rem] uppercase tracking-luxe text-petal"
         >
           Lookbook / Temporada Atardecer
         </motion.p>
@@ -57,7 +63,7 @@ export function Hero() {
           initial={false}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8, duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-          className="editorial-title max-w-4xl px-6 text-balance text-5xl text-cream sm:text-6xl md:text-8xl"
+          className="editorial-title max-w-4xl text-balance text-5xl text-cream sm:text-6xl md:text-8xl"
         >
           Vestir la luz de la tarde
         </motion.h1>
@@ -73,6 +79,19 @@ export function Hero() {
           </CtaLink>
         </motion.div>
       </div>
+
+      <motion.div
+        initial={false}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.45, duration: 1 }}
+        className="brand-hero__palette"
+        aria-hidden="true"
+      >
+        <span className="bg-coral" />
+        <span className="bg-lavender" />
+        <span className="bg-petal" />
+        <span className="bg-nude" />
+      </motion.div>
 
       <motion.div
         initial={false}

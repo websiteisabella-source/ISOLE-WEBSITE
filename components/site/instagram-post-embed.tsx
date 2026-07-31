@@ -31,7 +31,7 @@ export function InstagramPostEmbed({
         role="button"
         tabIndex={0}
         aria-label={`Reproducir reel de ${label}`}
-        className="group relative block aspect-[9/16] w-full cursor-pointer overflow-hidden rounded-sm bg-ink text-left"
+        className="group relative block aspect-[9/16] w-full cursor-pointer overflow-hidden rounded-sm border border-coral/10 bg-ink text-left shadow-[0_1rem_2.4rem_rgba(46,37,33,0.08)]"
       >
         <Image
           src={previewSrc}
@@ -40,12 +40,12 @@ export function InstagramPostEmbed({
           sizes="(max-width: 768px) 33vw, 22vw"
           className="object-cover transition-transform duration-[1100ms] ease-luxe group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/65 via-ink/10 to-transparent" />
-        <span className="absolute left-3 top-3 rounded-full bg-cream/90 px-2.5 py-1 text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-ink">
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/68 via-coral/10 to-transparent" />
+        <span className="absolute left-3 top-3 rounded-full bg-nude/90 px-2.5 py-1 text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-coral">
           Reel
         </span>
         <span className="absolute inset-0 flex items-center justify-center">
-          <span className="flex size-12 items-center justify-center rounded-full bg-cream/90 text-coral shadow-lg shadow-ink/15 transition-transform duration-500 group-hover:scale-105">
+          <span className="flex size-12 items-center justify-center rounded-full bg-cream/90 text-coral shadow-lg shadow-ink/15 transition-all duration-500 group-hover:scale-105 group-hover:bg-petal">
             <Play className="ml-0.5 size-5 fill-current" strokeWidth={1.6} />
           </span>
         </span>

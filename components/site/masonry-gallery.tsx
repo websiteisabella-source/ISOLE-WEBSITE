@@ -40,13 +40,17 @@ export function MasonryGallery() {
       className="mx-auto max-w-7xl px-5 pt-8 pb-20 md:px-10 md:py-28"
     >
       <Reveal className="mb-12 flex flex-col items-start justify-between gap-4 md:mb-16 md:flex-row md:items-end">
-        <div>
+        <div className="relative">
           <span className="text-[0.7rem] uppercase tracking-luxe text-coral">
             Colección destacada
           </span>
           <h2 className="editorial-title mt-4 max-w-xl text-balance text-4xl text-ink md:text-6xl">
             Composiciones que respiran
           </h2>
+          <span
+            className="mt-5 block h-1 w-28 rounded-full bg-gradient-to-r from-coral via-petal to-lavender"
+            aria-hidden="true"
+          />
         </div>
         <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
           Una selección editorial entre el cuerpo, la luz y la tela. Pensada para

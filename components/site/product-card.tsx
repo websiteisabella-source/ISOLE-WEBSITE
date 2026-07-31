@@ -20,7 +20,7 @@ export function ProductCard({
       className="group block"
       aria-label={`${product.name}, ${product.category}`}
     >
-      <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-muted">
+      <div className="relative aspect-[3/4] overflow-hidden rounded-sm border border-coral/10 bg-muted shadow-[0_1.2rem_3rem_rgba(46,37,33,0.08)] transition-shadow duration-700 ease-luxe group-hover:shadow-[0_1.6rem_3.8rem_rgba(241,86,58,0.16)]">
         {hasProductMedia ? (
           <>
             <Image
@@ -50,14 +50,14 @@ export function ProductCard({
           </div>
         )}
         {(product.description || product.fabric || product.colors?.length) && (
-          <span className="absolute left-4 top-4 rounded-full bg-cream/85 px-3 py-1 text-[0.6rem] uppercase tracking-[0.16em] text-ink backdrop-blur-sm">
+          <span className="absolute left-4 top-4 rounded-full bg-nude/90 px-3 py-1 text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-coral backdrop-blur-sm">
             Disponible en tienda
           </span>
         )}
       </div>
 
       <div className="mt-5 flex items-baseline justify-between gap-4">
-        <h3 className="font-serif text-2xl leading-[1.25] text-ink">
+        <h3 className="font-serif text-2xl leading-[1.25] text-ink transition-colors duration-500 group-hover:text-coral">
           {product.name}
         </h3>
         <span className="text-[0.7rem] uppercase tracking-[0.18em] text-muted-foreground transition-colors duration-500 group-hover:text-coral">

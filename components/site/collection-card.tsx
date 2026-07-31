@@ -25,7 +25,7 @@ export function CollectionCard({
     <Link
       href={href}
       className={cn(
-        'group relative block overflow-hidden rounded-sm',
+        'group relative block overflow-hidden rounded-sm border border-cream/40 shadow-[0_1.2rem_3rem_rgba(46,37,33,0.1)]',
         className,
       )}
     >
@@ -36,9 +36,9 @@ export function CollectionCard({
         sizes={sizes}
         className="object-cover transition-transform duration-[1200ms] ease-luxe group-hover:scale-105"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/0 to-transparent opacity-80 transition-opacity duration-700 group-hover:opacity-100" />
+      <div className="absolute inset-0 bg-gradient-to-t from-ink/62 via-coral/5 to-transparent opacity-85 transition-opacity duration-700 group-hover:opacity-100" />
       <div className="absolute inset-x-0 bottom-0 p-6">
-        <p className="text-[0.65rem] uppercase tracking-luxe text-cream/80">
+        <p className="text-[0.65rem] uppercase tracking-luxe text-petal">
           {caption}
         </p>
         <p className="mt-1 font-serif text-2xl leading-[1.25] text-cream md:text-3xl">

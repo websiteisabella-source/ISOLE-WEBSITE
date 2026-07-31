@@ -6,10 +6,10 @@ type Variant = 'coral' | 'outline' | 'ink'
 
 const variants: Record<Variant, string> = {
   coral:
-    'bg-coral text-primary-foreground hover:bg-coral/90 border border-coral',
+    'border border-coral bg-coral text-primary-foreground shadow-[0_0.9rem_2rem_rgba(241,86,58,0.18)] hover:border-lavender hover:bg-lavender',
   ink: 'bg-ink text-cream hover:bg-ink/90 border border-ink',
   outline:
-    'bg-transparent text-ink border border-ink/30 hover:border-ink hover:bg-ink hover:text-cream',
+    'border border-coral/45 bg-transparent text-coral hover:border-coral hover:bg-coral hover:text-primary-foreground',
 }
 
 type BaseProps = {

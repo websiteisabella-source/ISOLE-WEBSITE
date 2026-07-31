@@ -1,6 +1,5 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Quicksand } from 'next/font/google'
 import localFont from 'next/font/local'
 import {
   HOME_DESCRIPTION,
@@ -13,13 +12,6 @@ import {
 } from '@/lib/seo'
 import { absoluteUrl, SITE_NAME, SITE_URL } from '@/lib/site'
 import './globals.css'
-
-const sans = Quicksand({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-sans-app',
-  display: 'swap',
-})
 
 const tanPearl = localFont({
   src: './fonts/TAN-Pearl-Regular.woff2',
@@ -101,7 +93,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`bg-background ${sans.variable}`}
+      className="bg-background"
     >
       <body
         className={`${tanPearl.variable} ${poetry.variable} font-sans antialiased`}
