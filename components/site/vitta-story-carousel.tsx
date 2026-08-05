@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 const slides = [
   {
     src: '/images/vitta-story-1.jpg',
-    alt: 'Seleccion de jeans Vitta en tonos azul y negro',
+    alt: 'Selección de jeans Vitta en tonos azul y negro',
   },
   {
     src: '/images/vitta-story-2.jpg',
@@ -19,7 +19,7 @@ const slides = [
   },
   {
     src: '/images/vitta-story-4.jpg',
-    alt: 'Texturas y prendas de la coleccion Vitta',
+    alt: 'Texturas y prendas de la colección Vitta',
   },
 ]
 
@@ -40,7 +40,7 @@ export function VittaStoryCarousel() {
     <Link
       href="/catalogo/vitta"
       className="editorial-collection-banner group"
-      aria-label="Ver coleccion Vitta"
+      aria-label="Ver colección Vitta"
     >
       {slides.map((slide, index) => (
         <Image
@@ -58,7 +58,7 @@ export function VittaStoryCarousel() {
         />
       ))}
       <span className="editorial-collection-banner__shade" aria-hidden="true" />
-      <span className="editorial-collection-banner__label">Nueva coleccion</span>
+      <span className="editorial-collection-banner__label">Nueva colección</span>
       <span className="editorial-collection-banner__progress" aria-hidden="true">
         {slides.map((slide, index) => (
           <span

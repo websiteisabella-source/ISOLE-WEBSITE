@@ -27,7 +27,7 @@ const tanPearl = localFont({
 const poetry = localFont({
   src: './fonts/Poetry-of-Silence.ttf',
   variable: '--font-poetry-local',
-  weight: '400',
+  weight: '700',
   style: 'normal',
   display: 'swap',
   fallback: ['serif'],

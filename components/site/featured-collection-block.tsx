@@ -23,7 +23,7 @@ export function FeaturedCollectionBlock({
   return (
     <section className="featured-collection-block">
       <div className="featured-collection-header">
-        <h2 className="brand-subtitle featured-collection-heading">{title}</h2>
+        <h2 className="featured-collection-heading">{title}</h2>
         <Link href={href} className="featured-collection-link">
           Ver todo
         </Link>
