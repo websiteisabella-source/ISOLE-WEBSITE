@@ -15,6 +15,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 1,
     },
+    {
+      url: absoluteUrl('/historia'),
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: absoluteUrl('/comunidad'),
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
     ...products.map((product) => ({
       url: absoluteUrl(productPath(product)),
       lastModified: now,

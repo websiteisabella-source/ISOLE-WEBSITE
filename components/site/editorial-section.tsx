@@ -5,13 +5,26 @@ import { Reveal } from './reveal'
 import { cloudinaryImage } from '@/lib/cloudinary-assets'
 
 const editorialImage = cloudinaryImage('/images/editorial-story.png')
+const historyBackgroundImage = '/images/history-background-pattern.png'
 
 export function EditorialSection() {
   return (
     <section
       id="historia"
-      className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-5 pt-24 pb-8 md:grid-cols-2 md:gap-20 md:px-10 md:py-36"
+      className="relative isolate mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 overflow-hidden px-5 pt-24 pb-8 md:grid-cols-2 md:gap-20 md:px-10 md:py-36"
     >
+      <Image
+        src={historyBackgroundImage}
+        alt=""
+        fill
+        sizes="100vw"
+        className="-z-20 object-cover object-center"
+        aria-hidden="true"
+      />
+      <div
+        className="absolute inset-0 -z-10 bg-cream/84 backdrop-blur-[1px]"
+        aria-hidden="true"
+      />
       <Reveal className="relative aspect-[4/5] overflow-hidden rounded-sm border border-coral/10 shadow-[0_1.25rem_3rem_rgba(46,37,33,0.09)]">
         <Image
           src={editorialImage}
@@ -27,7 +40,7 @@ export function EditorialSection() {
           <FlowerIcon className="size-5 text-lavender" />
           La casa
         </span>
-        <h2 className="editorial-title mt-6 text-balance text-4xl text-ink md:text-5xl">
+        <h2 className="editorial-title mt-6 text-balance text-4xl text-lavender md:text-5xl">
           Nacimos del deseo de vestir lo natural
         </h2>
         <p className="brand-subtitle mt-4 text-4xl text-coral">

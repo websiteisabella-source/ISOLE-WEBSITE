@@ -34,6 +34,28 @@ type ApiEnvelope<T> = {
   errors?: { field?: string | null; message: string; code?: string | null }[] | null
 }
 
+type AuthenticatedUser = {
+  user: {
+    email: string
+    role: 'admin' | 'user'
+  }
+  tokens: {
+    access_token: string
+    refresh_token: string
+    token_type: string
+  }
+}
+
+type ImageAsset = {
+  id: string
+  public_id: string
+  secure_url: string
+  format: string
+  width: number
+  height: number
+  original_filename?: string | null
+}
+
 type ProductVariant = {
   color?: string | null
   size?: string | null
@@ -60,6 +82,9 @@ type Product = {
   clothing_type_ids: string[]
   image_ids: string[]
   primary_image_id?: string | null
+  image_assets?: ImageAsset[]
+  primary_image_url?: string | null
+  image_urls?: string[]
   variants: ProductVariant[]
   is_featured: boolean
   sort_order: number
@@ -104,7 +129,7 @@ type ProductForm = {
   status: ProductStatus
   collection_ids: string[]
   clothing_type_ids: string[]
-  image_ids_text: string
+  image_ids: string[]
   primary_image_id: string
   variant_text: string
   is_featured: boolean
@@ -122,13 +147,23 @@ type GroupForm = {
   is_active: boolean
 }
 
-const apiBase =
-  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, '') ?? 'http://127.0.0.1:8000'
+const configuredApiBase = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, '')
+
+function getApiBase() {
+  if (configuredApiBase) return configuredApiBase
+  if (
+    typeof window !== 'undefined' &&
+    ['localhost', '127.0.0.1'].includes(window.location.hostname)
+  ) {
+    return 'http://127.0.0.1:8000'
+  }
+  return ''
+}
 
 const fieldClass =
-  'h-10 w-full rounded-md border border-border bg-white px-3 text-sm text-foreground outline-none transition focus:border-coral focus:ring-2 focus:ring-coral/20'
+  'h-10 w-full rounded-md border border-border bg-cream px-3 text-sm text-foreground outline-none transition focus:border-coral focus:ring-2 focus:ring-coral/20'
 const areaClass =
-  'min-h-24 w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-foreground outline-none transition focus:border-coral focus:ring-2 focus:ring-coral/20'
+  'min-h-24 w-full rounded-md border border-border bg-cream px-3 py-2 text-sm text-foreground outline-none transition focus:border-coral focus:ring-2 focus:ring-coral/20'
 const labelClass = 'grid gap-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-ink/70'
 
 function slugify(value: string) {
@@ -153,7 +188,7 @@ function emptyProductForm(): ProductForm {
     status: 'draft',
     collection_ids: [],
     clothing_type_ids: [],
-    image_ids_text: '',
+    image_ids: [],
     primary_image_id: '',
     variant_text: '',
     is_featured: false,
@@ -175,7 +210,7 @@ function productToForm(product: Product): ProductForm {
     status: product.status,
     collection_ids: product.collection_ids ?? [],
     clothing_type_ids: product.clothing_type_ids ?? [],
-    image_ids_text: (product.image_ids ?? []).join('\n'),
+    image_ids: product.image_ids ?? [],
     primary_image_id: product.primary_image_id ?? '',
     variant_text: (product.variants ?? [])
       .map((variant) => [variant.color, variant.size, variant.sku].filter(Boolean).join(' / '))
@@ -208,13 +243,6 @@ function groupToForm(group: CatalogGroup): GroupForm {
     sort_order: group.sort_order?.toString() ?? '0',
     is_active: group.is_active,
   }
-}
-
-function splitIds(value: string) {
-  return value
-    .split(/[\n,]+/)
-    .map((item) => item.trim())
-    .filter(Boolean)
 }
 
 function parseVariants(value: string): ProductVariant[] {
@@ -251,9 +279,11 @@ export function AdminCatalogApp() {
   const [summary, setSummary] = useState<Summary | null>(null)
   const [products, setProducts] = useState<Product[]>([])
   const [groups, setGroups] = useState<CatalogGroup[]>([])
+  const [images, setImages] = useState<ImageAsset[]>([])
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<ProductStatus | 'all'>('all')
   const [loading, setLoading] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [notice, setNotice] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [productForm, setProductForm] = useState<ProductForm | null>(null)
@@ -267,6 +297,7 @@ export function AdminCatalogApp() {
     () => groups.filter((group) => group.kind === 'clothing_type'),
     [groups],
   )
+  const imageMap = useMemo(() => new Map(images.map((image) => [image.id, image])), [images])
 
   useEffect(() => {
     setToken(window.localStorage.getItem('isole_admin_token'))
@@ -279,6 +310,10 @@ export function AdminCatalogApp() {
   }, [token])
 
   async function request<T>(path: string, options: RequestInit = {}) {
+    const apiBase = getApiBase()
+    if (!apiBase) {
+      throw new Error('Falta configurar la URL pública de la API.')
+    }
     const response = await fetch(`${apiBase}/api/v1${path}`, {
       ...options,
       headers: {
@@ -288,6 +323,12 @@ export function AdminCatalogApp() {
       },
     })
     const payload = (await response.json()) as ApiEnvelope<T>
+    if (response.status === 401 || response.status === 403) {
+      window.localStorage.removeItem('isole_admin_token')
+      window.localStorage.removeItem('isole_admin_refresh_token')
+      setToken(null)
+      throw new Error('La sesión expiró o no tiene permisos de administrador.')
+    }
     if (!response.ok || !payload.success) {
       const details = payload.errors?.map((item) => item.message).join(' ')
       throw new Error(details || payload.message || 'No fue posible completar la accion.')
@@ -303,14 +344,16 @@ export function AdminCatalogApp() {
       if (search.trim()) params.set('search', search.trim())
       if (statusFilter !== 'all') params.set('status', statusFilter)
 
-      const [summaryData, productData, groupData] = await Promise.all([
+      const [summaryData, productData, groupData, imageData] = await Promise.all([
         request<Summary>('/admin/catalog/summary'),
         request<{ items: Product[]; total: number }>(`/admin/catalog/products?${params}`),
         request<{ items: CatalogGroup[]; total: number }>('/admin/catalog/groups?page_size=100'),
+        request<{ items: ImageAsset[]; total: number }>('/images?page_size=100'),
       ])
       setSummary(summaryData)
       setProducts(productData.items)
       setGroups(groupData.items)
+      setImages(imageData.items)
     } catch (refreshError) {
       setError(refreshError instanceof Error ? refreshError.message : 'Error cargando catálogo.')
     } finally {
@@ -328,20 +371,25 @@ export function AdminCatalogApp() {
     body.set('password', String(formData.get('password') ?? ''))
 
     try {
+      const apiBase = getApiBase()
+      if (!apiBase) {
+        throw new Error('Falta configurar la URL pública de la API.')
+      }
       const response = await fetch(`${apiBase}/api/v1/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body,
       })
-      const payload = (await response.json()) as ApiEnvelope<{
-        access_token: string
-        token_type: string
-      }>
+      const payload = (await response.json()) as ApiEnvelope<AuthenticatedUser>
       if (!response.ok || !payload.success) {
         throw new Error(payload.message || 'Credenciales invalidas.')
       }
-      window.localStorage.setItem('isole_admin_token', payload.data.access_token)
-      setToken(payload.data.access_token)
+      if (payload.data.user.role !== 'admin') {
+        throw new Error('Este usuario no tiene permisos de administrador.')
+      }
+      window.localStorage.setItem('isole_admin_token', payload.data.tokens.access_token)
+      window.localStorage.setItem('isole_admin_refresh_token', payload.data.tokens.refresh_token)
+      setToken(payload.data.tokens.access_token)
       setNotice('Sesión iniciada.')
     } catch (loginError) {
       setError(loginError instanceof Error ? loginError.message : 'No fue posible iniciar sesion.')
@@ -350,14 +398,64 @@ export function AdminCatalogApp() {
     }
   }
 
-  function logout() {
-    window.localStorage.removeItem('isole_admin_token')
-    setToken(null)
-    setSummary(null)
-    setProducts([])
-    setGroups([])
-    setProductForm(null)
-    setGroupForm(null)
+  async function logout() {
+    const currentToken = window.localStorage.getItem('isole_admin_token')
+    const refreshToken = window.localStorage.getItem('isole_admin_refresh_token')
+    try {
+      const apiBase = getApiBase()
+      if (currentToken) {
+        await fetch(`${apiBase}/api/v1/auth/logout`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${currentToken}`,
+          },
+          body: JSON.stringify(refreshToken ? { refresh_token: refreshToken } : {}),
+        })
+      }
+    } catch {
+      // The local session should still clear if the API is temporarily unavailable.
+    } finally {
+      window.localStorage.removeItem('isole_admin_token')
+      window.localStorage.removeItem('isole_admin_refresh_token')
+      setToken(null)
+      setSummary(null)
+      setProducts([])
+      setGroups([])
+      setImages([])
+      setProductForm(null)
+      setGroupForm(null)
+    }
+  }
+
+  async function uploadProductImage(file: File) {
+    const body = new FormData()
+    body.set('file', file)
+    body.set('folder', 'isole-products')
+
+    setUploading(true)
+    setError(null)
+    try {
+      const uploaded = await request<ImageAsset>('/images', {
+        method: 'POST',
+        body,
+      })
+      setImages((current) => [uploaded, ...current.filter((image) => image.id !== uploaded.id)])
+      setProductForm((current) => {
+        if (!current) return current
+        const image_ids = [...new Set([...current.image_ids, uploaded.id])]
+        return {
+          ...current,
+          image_ids,
+          primary_image_id: current.primary_image_id || uploaded.id,
+        }
+      })
+      setNotice('Imagen cargada y agregada al producto.')
+    } catch (uploadError) {
+      setError(uploadError instanceof Error ? uploadError.message : 'No fue posible cargar la imagen.')
+    } finally {
+      setUploading(false)
+    }
   }
 
   async function saveProduct(event: FormEvent<HTMLFormElement>) {
@@ -376,7 +474,7 @@ export function AdminCatalogApp() {
       status: productForm.status,
       collection_ids: productForm.collection_ids,
       clothing_type_ids: productForm.clothing_type_ids,
-      image_ids: splitIds(productForm.image_ids_text),
+      image_ids: productForm.image_ids,
       primary_image_id: productForm.primary_image_id || null,
       variants: parseVariants(productForm.variant_text),
       is_featured: productForm.is_featured,
@@ -505,7 +603,7 @@ export function AdminCatalogApp() {
       <main className="min-h-screen bg-cream px-5 py-8 text-foreground">
         <section className="mx-auto grid min-h-[calc(100vh-4rem)] max-w-5xl items-center gap-8 lg:grid-cols-[1fr_380px]">
           <div>
-            <p className="brand-subtitle text-5xl text-coral sm:text-6xl">ISOLE</p>
+            <p className="brand-subtitle text-5xl text-coral sm:text-6xl">ISOLÉ</p>
             <h1 className="editorial-title mt-4 max-w-2xl text-4xl text-ink sm:text-6xl">
               Administración del catálogo
             </h1>
@@ -516,10 +614,10 @@ export function AdminCatalogApp() {
           </div>
           <form
             onSubmit={handleLogin}
-            className="rounded-lg border border-border bg-white p-5 shadow-sm"
+            className="rounded-lg border border-border bg-cream p-5 shadow-sm"
           >
             <div className="mb-5 flex items-center gap-3">
-              <span className="grid size-10 place-items-center rounded-full bg-coral text-white">
+              <span className="grid size-10 place-items-center rounded-full bg-coral text-cream">
                 <LogIn className="size-4" />
               </span>
               <div>
@@ -548,10 +646,10 @@ export function AdminCatalogApp() {
 
   return (
     <main className="min-h-screen bg-cream text-foreground">
-      <header className="border-b border-border bg-white/85 px-4 py-4 backdrop-blur">
+      <header className="border-b border-border bg-cream/85 px-4 py-4 backdrop-blur">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="brand-subtitle text-4xl text-coral">ISOLE</p>
+            <p className="brand-subtitle text-4xl text-coral">ISOLÉ</p>
             <h1 className="editorial-title text-2xl text-ink">Admin catálogo</h1>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -568,7 +666,7 @@ export function AdminCatalogApp() {
       </header>
 
       <div className="mx-auto grid max-w-7xl gap-5 px-4 py-5 lg:grid-cols-[230px_1fr]">
-        <aside className="h-fit rounded-lg border border-border bg-white p-2">
+        <aside className="h-fit rounded-lg border border-border bg-cream p-2">
           <NavButton active={view === 'summary'} onClick={() => setView('summary')}>
             <Package className="size-4" />
             Resumen
@@ -616,10 +714,13 @@ export function AdminCatalogApp() {
               products={products}
               collections={collections}
               clothingTypes={clothingTypes}
+              images={images}
+              imageMap={imageMap}
               search={search}
               statusFilter={statusFilter}
               productForm={productForm}
               loading={loading}
+              uploading={uploading}
               onSearch={setSearch}
               onStatusFilter={setStatusFilter}
               onRefresh={refreshData}
@@ -628,6 +729,7 @@ export function AdminCatalogApp() {
               onCancel={() => setProductForm(null)}
               onChange={setProductForm}
               onSubmit={saveProduct}
+              onUploadImage={uploadProductImage}
               onAction={productAction}
             />
           )}
@@ -705,7 +807,7 @@ function SummaryView({
       </div>
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {stats.map(([label, value]) => (
-          <div key={label} className="rounded-lg border border-border bg-white p-4">
+          <div key={label} className="rounded-lg border border-border bg-cream p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-ink/55">
               {label}
             </p>
@@ -713,7 +815,7 @@ function SummaryView({
           </div>
         ))}
       </div>
-      <div className="rounded-lg border border-border bg-white p-4">
+      <div className="rounded-lg border border-border bg-cream p-4">
         <h3 className="text-lg font-semibold text-ink">Actividad reciente</h3>
         <div className="mt-3 divide-y divide-border">
           {summary.recent_products.length === 0 && (
@@ -738,10 +840,13 @@ function ProductsView({
   products,
   collections,
   clothingTypes,
+  images,
+  imageMap,
   search,
   statusFilter,
   productForm,
   loading,
+  uploading,
   onSearch,
   onStatusFilter,
   onRefresh,
@@ -750,15 +855,19 @@ function ProductsView({
   onCancel,
   onChange,
   onSubmit,
+  onUploadImage,
   onAction,
 }: {
   products: Product[]
   collections: CatalogGroup[]
   clothingTypes: CatalogGroup[]
+  images: ImageAsset[]
+  imageMap: Map<string, ImageAsset>
   search: string
   statusFilter: ProductStatus | 'all'
   productForm: ProductForm | null
   loading: boolean
+  uploading: boolean
   onSearch: (value: string) => void
   onStatusFilter: (value: ProductStatus | 'all') => void
   onRefresh: () => void
@@ -767,6 +876,7 @@ function ProductsView({
   onCancel: () => void
   onChange: (form: ProductForm) => void
   onSubmit: (event: FormEvent<HTMLFormElement>) => void
+  onUploadImage: (file: File) => Promise<void>
   onAction: (product: Product, action: 'publish' | 'archive' | 'duplicate' | 'delete') => void
 }) {
   return (
@@ -782,7 +892,7 @@ function ProductsView({
         </Button>
       </div>
 
-      <div className="flex flex-wrap gap-2 rounded-lg border border-border bg-white p-3">
+      <div className="flex flex-wrap gap-2 rounded-lg border border-border bg-cream p-3">
         <label className="relative min-w-[220px] flex-1">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-ink/45" />
           <input
@@ -813,14 +923,17 @@ function ProductsView({
           form={productForm}
           collections={collections}
           clothingTypes={clothingTypes}
+          images={images}
           loading={loading}
+          uploading={uploading}
           onCancel={onCancel}
           onChange={onChange}
           onSubmit={onSubmit}
+          onUploadImage={onUploadImage}
         />
       )}
 
-      <div className="overflow-hidden rounded-lg border border-border bg-white">
+      <div className="overflow-hidden rounded-lg border border-border bg-cream">
         <div className="hidden min-w-[780px] grid-cols-[1.5fr_140px_150px_190px] gap-3 border-b border-border bg-muted/50 px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-ink/60 md:grid">
           <span>Producto</span>
           <span>Estado</span>
@@ -837,6 +950,7 @@ function ProductsView({
               product={product}
               collections={collections}
               clothingTypes={clothingTypes}
+              imageMap={imageMap}
               onEdit={onEdit}
               onAction={onAction}
             />
@@ -851,19 +965,31 @@ function ProductEditor({
   form,
   collections,
   clothingTypes,
+  images,
   loading,
+  uploading,
   onCancel,
   onChange,
   onSubmit,
+  onUploadImage,
 }: {
   form: ProductForm
   collections: CatalogGroup[]
   clothingTypes: CatalogGroup[]
+  images: ImageAsset[]
   loading: boolean
+  uploading: boolean
   onCancel: () => void
   onChange: (form: ProductForm) => void
   onSubmit: (event: FormEvent<HTMLFormElement>) => void
+  onUploadImage: (file: File) => Promise<void>
 }) {
+  const imageById = useMemo(() => new Map(images.map((image) => [image.id, image])), [images])
+  const selectedImages = form.image_ids
+    .map((id) => imageById.get(id))
+    .filter((image): image is ImageAsset => Boolean(image))
+  const availableImages = images.filter((image) => !form.image_ids.includes(image.id)).slice(0, 12)
+
   function update(next: Partial<ProductForm>) {
     onChange({ ...form, ...next })
   }
@@ -875,8 +1001,31 @@ function ProductEditor({
     update({ [field]: [...values] } as Partial<ProductForm>)
   }
 
+  function addImage(image: ImageAsset) {
+    const image_ids = [...new Set([...form.image_ids, image.id])]
+    update({
+      image_ids,
+      primary_image_id: form.primary_image_id || image.id,
+    })
+  }
+
+  function removeImage(id: string) {
+    const image_ids = form.image_ids.filter((imageId) => imageId !== id)
+    update({
+      image_ids,
+      primary_image_id: form.primary_image_id === id ? image_ids[0] ?? '' : form.primary_image_id,
+    })
+  }
+
+  async function handleUpload(files: FileList | null) {
+    if (!files?.length) return
+    for (const file of Array.from(files)) {
+      await onUploadImage(file)
+    }
+  }
+
   return (
-    <form onSubmit={onSubmit} className="rounded-lg border border-lavender/25 bg-white p-4">
+    <form onSubmit={onSubmit} className="rounded-lg border border-lavender/25 bg-cream p-4">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h3 className="text-lg font-semibold text-ink">
@@ -1015,35 +1164,83 @@ function ProductEditor({
         />
       </div>
 
-      <div className="mt-5 grid gap-4 lg:grid-cols-2">
+      <div className="mt-5 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+        <section className="rounded-lg border border-border bg-cream/50 p-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h4 className="text-sm font-semibold uppercase tracking-[0.14em] text-ink/70">
+                Imágenes del producto
+              </h4>
+              <p className="mt-1 text-sm text-ink/60">
+                Sube fotos, marca la principal y quita las que no correspondan.
+              </p>
+            </div>
+            <label className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-md border border-border px-3 text-sm font-semibold text-ink transition hover:border-coral hover:text-coral">
+              <Upload className="size-4" />
+              {uploading ? 'Subiendo...' : 'Subir'}
+              <input
+                className="sr-only"
+                type="file"
+                accept="image/*"
+                multiple
+                disabled={uploading}
+                onChange={async (event) => {
+                  await handleUpload(event.target.files)
+                  event.currentTarget.value = ''
+                }}
+              />
+            </label>
+          </div>
+
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {selectedImages.map((image) => (
+              <ImagePickerCard
+                key={image.id}
+                image={image}
+                selected
+                primary={form.primary_image_id === image.id}
+                onAdd={() => addImage(image)}
+                onRemove={() => removeImage(image.id)}
+                onPrimary={() => update({ primary_image_id: image.id })}
+              />
+            ))}
+            {selectedImages.length === 0 && (
+              <div className="rounded-md border border-dashed border-border p-4 text-sm text-ink/60">
+                Aún no hay imágenes en este producto.
+              </div>
+            )}
+          </div>
+
+          {availableImages.length > 0 && (
+            <>
+              <h4 className="mt-5 text-sm font-semibold uppercase tracking-[0.14em] text-ink/70">
+                Biblioteca reciente
+              </h4>
+              <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                {availableImages.map((image) => (
+                  <ImagePickerCard
+                    key={image.id}
+                    image={image}
+                    selected={false}
+                    primary={false}
+                    onAdd={() => addImage(image)}
+                    onRemove={() => removeImage(image.id)}
+                    onPrimary={() => update({ primary_image_id: image.id })}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+        </section>
         <label className={labelClass}>
-          IDs de imagen
+          Variantes
           <textarea
             className={areaClass}
-            placeholder="Un ID por linea o separados por coma"
-            value={form.image_ids_text}
-            onChange={(event) => update({ image_ids_text: event.target.value })}
+            placeholder="Color / Talla / SKU"
+            value={form.variant_text}
+            onChange={(event) => update({ variant_text: event.target.value })}
           />
         </label>
-        <div className="space-y-4">
-          <label className={labelClass}>
-            Imagen principal
-            <input
-              className={fieldClass}
-              value={form.primary_image_id}
-              onChange={(event) => update({ primary_image_id: event.target.value })}
-            />
-          </label>
-          <label className={labelClass}>
-            Variantes
-            <textarea
-              className={areaClass}
-              placeholder="Color / Talla / SKU"
-              value={form.variant_text}
-              onChange={(event) => update({ variant_text: event.target.value })}
-            />
-          </label>
-        </div>
       </div>
 
       <label className="mt-4 flex items-center gap-2 text-sm font-semibold text-ink">
@@ -1090,16 +1287,82 @@ function CheckboxGroup({
   )
 }
 
+function ImagePickerCard({
+  image,
+  selected,
+  primary,
+  onAdd,
+  onRemove,
+  onPrimary,
+}: {
+  image: ImageAsset
+  selected: boolean
+  primary: boolean
+  onAdd: () => void
+  onRemove: () => void
+  onPrimary: () => void
+}) {
+  return (
+    <div className="overflow-hidden rounded-md border border-border bg-cream">
+      <div className="aspect-[4/5] bg-muted">
+        <img
+          src={image.secure_url}
+          alt={image.original_filename ?? 'Imagen de producto'}
+          className="size-full object-cover"
+        />
+      </div>
+      <div className="space-y-2 p-2">
+        <p className="truncate text-xs text-ink/60">{image.original_filename ?? image.public_id}</p>
+        <div className="flex flex-wrap gap-1.5">
+          {selected ? (
+            <>
+              <button
+                type="button"
+                onClick={onPrimary}
+                className={cn(
+                  'rounded-md border px-2 py-1 text-xs font-semibold transition',
+                  primary
+                    ? 'border-lavender bg-lavender/10 text-lavender'
+                    : 'border-border text-ink/65 hover:border-lavender hover:text-lavender',
+                )}
+              >
+                {primary ? 'Principal' : 'Hacer principal'}
+              </button>
+              <button
+                type="button"
+                onClick={onRemove}
+                className="rounded-md border border-border px-2 py-1 text-xs font-semibold text-coral transition hover:border-coral"
+              >
+                Quitar
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              onClick={onAdd}
+              className="rounded-md border border-border px-2 py-1 text-xs font-semibold text-ink/70 transition hover:border-coral hover:text-coral"
+            >
+              Agregar
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function ProductRow({
   product,
   collections,
   clothingTypes,
+  imageMap,
   onEdit,
   onAction,
 }: {
   product: Product
   collections: CatalogGroup[]
   clothingTypes: CatalogGroup[]
+  imageMap: Map<string, ImageAsset>
   onEdit: (product: Product) => void
   onAction: (product: Product, action: 'publish' | 'archive' | 'duplicate' | 'delete') => void
 }) {
@@ -1109,20 +1372,36 @@ function ProductRow({
     )
     .map((group) => group.name)
     .join(', ')
+  const preview =
+    (product.primary_image_id ? imageMap.get(product.primary_image_id)?.secure_url : null) ??
+    product.image_assets?.find((image) => image.id === product.primary_image_id)?.secure_url ??
+    product.image_assets?.[0]?.secure_url ??
+    product.image_urls?.[0]
 
   return (
     <div className="grid gap-3 p-4 md:grid-cols-[1.5fr_140px_150px_190px] md:items-center">
-      <div className="min-w-0">
-        <div className="flex items-center gap-2">
-          <p className="truncate font-semibold text-ink">{product.name}</p>
-          {product.image_ids.length > 0 ? (
-            <ImageIcon className="size-4 text-lavender" />
+      <div className="flex min-w-0 items-center gap-3">
+        <div className="grid size-14 shrink-0 place-items-center overflow-hidden rounded-md bg-muted">
+          {preview ? (
+            <img src={preview} alt="" className="size-full object-cover" />
+          ) : product.image_ids.length > 0 ? (
+            <ImageIcon className="size-5 text-lavender" />
           ) : (
-            <Upload className="size-4 text-coral" />
+            <Upload className="size-5 text-coral" />
           )}
         </div>
-        <p className="truncate text-sm text-ink/60">{product.slug}</p>
-        <p className="mt-1 truncate text-xs text-ink/50">{related || 'Sin grupo asignado'}</p>
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <p className="truncate font-semibold text-ink">{product.name}</p>
+            {product.image_ids.length > 0 ? (
+              <ImageIcon className="size-4 text-lavender" />
+            ) : (
+              <Upload className="size-4 text-coral" />
+            )}
+          </div>
+          <p className="truncate text-sm text-ink/60">{product.slug}</p>
+          <p className="mt-1 truncate text-xs text-ink/50">{related || 'Sin grupo asignado'}</p>
+        </div>
       </div>
       <StatusBadge status={product.status} />
       <div className="text-sm text-ink/65">
@@ -1197,7 +1476,7 @@ function GroupsView({
       )}
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {groups.map((group) => (
-          <div key={group.id} className="rounded-lg border border-border bg-white p-4">
+          <div key={group.id} className="rounded-lg border border-border bg-cream p-4">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h3 className="font-semibold text-ink">{group.name}</h3>
@@ -1248,7 +1527,7 @@ function GroupEditor({
   }
 
   return (
-    <form onSubmit={onSubmit} className="rounded-lg border border-lavender/25 bg-white p-4">
+    <form onSubmit={onSubmit} className="rounded-lg border border-lavender/25 bg-cream p-4">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h3 className="text-lg font-semibold text-ink">
           {form.id ? 'Editar grupo' : `Nuevo grupo: ${groupName(form.kind)}`}

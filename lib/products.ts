@@ -9,6 +9,7 @@ export type Product = {
   slug: string
   name: string
   category: string
+  mediaStatus?: 'verified' | 'generated'
   shortDescription?: string
   description?: string
   fabric?: string
@@ -33,11 +34,19 @@ export type CatalogGroup = {
 
 export const catalogGroups: CatalogGroup[] = [
   {
-    slug: 'sagi-vitta',
-    name: 'SAGI - VITTA',
+    slug: 'crisalida',
+    name: 'CRISÁLIDA',
     type: 'collection',
     description:
-      'SAGI - VITTA reúne piezas de presencia serena y contemporánea, pensadas para explorar una identidad femenina clara, versátil y cercana.',
+      'CRISÁLIDA reúne piezas de transformación suave, pensadas para vestir con luz, calma y una feminidad natural.',
+    productSlugs: ['vestido-atardecer', 'blusa-seda-alba', 'slip-petalo'],
+  },
+  {
+    slug: 'vitta',
+    name: 'VITTA',
+    type: 'collection',
+    description:
+      'VITTA reúne piezas de presencia serena y contemporánea, pensadas para explorar una identidad femenina clara, versátil y cercana.',
     productSlugs: ['blusa-vitta', 'falda-dolce-vitta', 'jean-vitta'],
   },
   {
@@ -47,26 +56,6 @@ export const catalogGroups: CatalogGroup[] = [
     description:
       'Swimwear agrupa piezas de baño y complementos para momentos de sol, descanso y movimiento, con una lectura fresca del universo ISOLÉ.',
     productSlugs: ['enterizo-noir', 'bikini-atardecer', 'tiara-marfil'],
-  },
-  {
-    slug: 'georgiana',
-    name: 'GEORGIANA',
-    type: 'collection',
-    description:
-      'GEORGIANA propone una mirada expresiva y segura del vestir, con prendas que funcionan como acentos de estilo dentro del catálogo.',
-    productSlugs: [
-      'cinturilla-georgiana',
-      'vestido-duquesa',
-      'vestido-encanto-azul',
-    ],
-  },
-  {
-    slug: 'cayena',
-    name: 'CAYENA',
-    type: 'collection',
-    description:
-      'CAYENA articula piezas cálidas y decididas, creadas para acompañar combinaciones con intención sin perder naturalidad.',
-    productSlugs: ['vestido-cayena', 'maxi-jean-cayena', 'vestido-mono-blanco'],
   },
   {
     slug: 'vestidos',
@@ -101,28 +90,12 @@ export const catalogGroups: CatalogGroup[] = [
     productSlugs: ['jean-wide-leg-clasico'],
   },
   {
-    slug: 'camisetas',
-    name: 'CAMISETAS',
+    slug: 'complementos',
+    name: 'COMPLEMENTOS',
     type: 'category',
     description:
-      'Camisetas presenta piezas de lectura cómoda y directa, pensadas para integrarse con facilidad a combinaciones cotidianas.',
-    productSlugs: ['camiseta-unisex-criollitos'],
-  },
-  {
-    slug: 'unique',
-    name: 'UNIQUE',
-    type: 'collection',
-    description:
-      'UNIQUE reúne prendas de intención limpia y expresiva, concebidas para habitar el clóset con presencia propia y combinaciones sencillas.',
-    productSlugs: ['pantalon-marfil', 'blusa-marfil', 'vestido-primaveral-corto'],
-  },
-  {
-    slug: 'celestial',
-    name: 'CELESTIAL',
-    type: 'collection',
-    description:
-      'CELESTIAL propone piezas de carácter delicado y afirmativo, conectadas con una idea de luz interior y expresión personal.',
-    productSlugs: ['corset-celestial', 'falda-celestial'],
+      'Complementos reúne acentos y detalles para completar combinaciones con una lectura delicada y cercana.',
+    productSlugs: ['tiara-marfil'],
   },
   {
     slug: 'todos-los-articulos',
@@ -144,6 +117,7 @@ export const products: Product[] = [
       'Vestido Atardecer concentra la energía cálida de la colección en una pieza de lectura romántica y natural. Funciona como protagonista del look y puede acompañarse con accesorios discretos o prendas neutras. Su paleta coral y nude dialoga con el universo de luz interior de ISOLÉ sin recurrir a exageraciones ni promesas técnicas.',
     fabric: 'Lino 100% natural',
     colors: ['Atardecer Coral', 'Nude'],
+    mediaStatus: 'generated',
     product: cloudinaryImage('/images/arrival-1-product.png'),
     model: cloudinaryImage('/images/arrival-1-model.png'),
     gallery: [
@@ -163,6 +137,7 @@ export const products: Product[] = [
       'Blusa Seda Alba propone una presencia tranquila dentro del clóset: clara, femenina y fácil de integrar a distintas combinaciones. Puede funcionar como base de un look sereno o como contraste para piezas de color más expresivo. Su nombre y paleta evocan una idea de calma sin afirmar características técnicas no documentadas.',
     fabric: 'Seda lavada',
     colors: ['Crema', 'Pétalo Rosa'],
+    mediaStatus: 'generated',
     product: cloudinaryImage('/images/arrival-2-product.png'),
     model: cloudinaryImage('/images/arrival-2-model.png'),
     gallery: [
@@ -181,6 +156,7 @@ export const products: Product[] = [
       'Slip Pétalo lleva el tono rosa de la marca a una pieza de intención sutil y memorable. Su lectura visual permite usarlo como punto central de una combinación o acompañarlo con capas ligeras y accesorios sobrios. Es una propuesta romántica sin exceso, alineada con una feminidad segura y contemporánea.',
     fabric: 'Satén de viscosa',
     colors: ['Pétalo Rosa', 'Lavanda Viva'],
+    mediaStatus: 'generated',
     product: cloudinaryImage('/images/arrival-3-product.png'),
     model: cloudinaryImage('/images/arrival-3-model.png'),
     gallery: [
@@ -474,6 +450,10 @@ export function getCatalogProducts(group: CatalogGroup) {
 }
 
 export function getProductImages(product: Product) {
+  if (!hasVerifiedProductMedia(product)) {
+    return ['/placeholder.svg']
+  }
+
   const images = [
     ...(product.gallery ?? []),
     product.model,
@@ -481,6 +461,19 @@ export function getProductImages(product: Product) {
   ].filter((image): image is string => Boolean(image))
 
   return images.length > 0 ? uniqueValues(images) : ['/placeholder.svg']
+}
+
+export function hasVerifiedProductMedia(product: Product) {
+  return product.mediaStatus !== 'generated' && Boolean(product.product || product.model)
+}
+
+export function getProductCollectionName(product: Product) {
+  const collection = catalogGroups.find(
+    (group) =>
+      group.type === 'collection' && group.productSlugs?.includes(product.slug),
+  )
+
+  return collection?.name ?? product.category
 }
 
 export function getRelatedProducts(product: Product) {

@@ -60,16 +60,11 @@
 }
 
 @theme inline {
-  --font-heading: var(--font-tan-pearl-local), 'Iowan Old Style',
-    'Palatino Linotype', 'Book Antiqua', Georgia, serif;
-  --font-serif: var(--font-tan-pearl-local), 'Iowan Old Style',
-    'Palatino Linotype', 'Book Antiqua', Georgia, serif;
-  --font-sans: var(--font-sans-app), 'Avenir Next', 'Segoe UI',
-    'Helvetica Neue', Arial, sans-serif;
-  --font-tan-pearl: var(--font-tan-pearl-local), 'Iowan Old Style',
-    'Palatino Linotype', 'Book Antiqua', Georgia, serif;
-  --font-poetry: var(--font-poetry-local), 'Iowan Old Style',
-    'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+  --font-heading: var(--font-tan-pearl-local), serif;
+  --font-serif: var(--font-tan-pearl-local), serif;
+  --font-sans: var(--font-sans-app), sans-serif;
+  --font-tan-pearl: var(--font-tan-pearl-local), serif;
+  --font-poetry: var(--font-poetry-local), serif;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -108,6 +103,7 @@
 
   --font-sans-app: 'Quicksand Local';
 
+  /* Manual de marca ISOLE 2026 */
   --nude: #fadbb9;
   --cream: #fbf5ec;
   --coral: #f1563a;
@@ -119,22 +115,28 @@
 
   --background: #fbf5ec;
   --foreground: #2e2521;
-  --card: #ffffff;
+  --card: var(--cream);
   --card-foreground: #2e2521;
-  --popover: #ffffff;
+  --popover: var(--cream);
   --popover-foreground: #2e2521;
   --primary: #f1563a;
-  --primary-foreground: #fff8f1;
+  --primary-foreground: var(--cream);
   --secondary: #fadbb9;
   --secondary-foreground: #2e2521;
-  --muted: #f1e7d8;
-  --muted-foreground: #8a7866;
+  --muted: color-mix(in oklab, var(--nude) 38%, var(--cream));
+  --muted-foreground: color-mix(in oklab, var(--ink) 64%, var(--nude));
   --accent: #fadbb9;
   --accent-foreground: #2e2521;
-  --destructive: #c0392b;
-  --border: #e8dcc9;
-  --input: #e8dcc9;
+  --destructive: var(--coral);
+  --border: color-mix(in oklab, var(--nude) 52%, var(--cream));
+  --input: color-mix(in oklab, var(--nude) 52%, var(--cream));
   --ring: #f1563a;
+}
+
+@property --story-progress {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
 }
 
 @layer base {
@@ -167,22 +169,20 @@
 }
 
 @layer utilities {
+  /* Manual ISOLE: TAN Pearl para titulos, Poetry para subtitulos y Quicksand para cuerpo/controles. */
   .font-serif {
-    font-family: var(--font-tan-pearl-local), 'Iowan Old Style',
-      'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+    font-family: var(--font-tan-pearl-local), serif;
   }
 
   .editorial-title {
-    font-family: var(--font-tan-pearl-local), 'Iowan Old Style',
-      'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+    font-family: var(--font-tan-pearl-local), serif;
     font-weight: 400;
     letter-spacing: 0;
     line-height: 1.16 !important;
   }
 
   .brand-subtitle {
-    font-family: var(--font-poetry-local), 'Iowan Old Style',
-      'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+    font-family: var(--font-poetry-local), serif;
     font-weight: 400;
     letter-spacing: 0;
     line-height: 1.28 !important;
@@ -238,6 +238,19 @@
     --manual-mark-color: var(--lavender);
   }
 
+  .site-mobile-logo-mark {
+    width: 5.9rem;
+    max-width: 30vw;
+  }
+
+  .site-mobile-logo-mark--light {
+    --manual-mark-color: var(--cream);
+  }
+
+  .site-mobile-wordmark--light {
+    filter: brightness(0) invert(1);
+  }
+
   .brand-hero__manual-pattern {
     position: absolute;
     inset: 0;
@@ -283,6 +296,299 @@
     min-width: 0;
   }
 
+  .hero-video {
+    transform-origin: center center;
+  }
+
+  .mobile-collection-preview {
+    padding: 4.4rem 1.25rem 3.8rem;
+    background: var(--background);
+  }
+
+  .mobile-collection-preview--second {
+    padding-top: 3.6rem;
+  }
+
+  .mobile-collection-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.35rem;
+  }
+
+  .mobile-collection-heading {
+    font-family: var(--font-tan-pearl-local), serif;
+    font-size: 1.04rem;
+    font-weight: 400;
+    line-height: 1;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  .mobile-collection-link {
+    font-size: 0.58rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--ink);
+    transition: color 300ms ease;
+  }
+
+  .mobile-collection-link:hover {
+    color: var(--coral);
+  }
+
+  .mobile-collection-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 1.25rem;
+    row-gap: 1.75rem;
+  }
+
+  .mobile-collection-product {
+    display: block;
+    min-width: 0;
+  }
+
+  .mobile-collection-image {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    background: var(--muted);
+  }
+
+  .mobile-collection-name {
+    margin-top: 0.55rem;
+    font-family: var(--font-tan-pearl-local), serif;
+    font-size: 0.68rem;
+    line-height: 1.15;
+    color: var(--ink);
+  }
+
+  .mobile-collection-meta {
+    margin-top: 0.28rem;
+    font-size: 0.52rem;
+    line-height: 1;
+    color: rgb(46 37 33 / 0.8);
+  }
+
+  .mobile-editorial-banner {
+    position: relative;
+    display: block;
+    height: 18.75rem;
+    overflow: hidden;
+    color: var(--cream);
+    background: var(--ink);
+  }
+
+  .mobile-editorial-banner__shade {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+      linear-gradient(180deg, rgb(46 37 33 / 0.1), rgb(46 37 33 / 0.46)),
+      linear-gradient(90deg, rgb(46 37 33 / 0.26), transparent 58%);
+  }
+
+  .mobile-editorial-banner__text {
+    position: absolute;
+    left: 50%;
+    bottom: 3.2rem;
+    z-index: 2;
+    width: min(22rem, calc(100vw - 2.5rem));
+    transform: translateX(-50%);
+    text-align: center;
+    font-size: 2.65rem;
+    line-height: 1;
+    color: var(--cream);
+    text-shadow: 0 0.9rem 2rem rgb(46 37 33 / 0.38);
+  }
+
+  .featured-collection-block {
+    max-width: 92rem;
+    margin-inline: auto;
+    padding: clamp(4.25rem, 6vw, 6rem) 1.25rem clamp(4rem, 6vw, 5.5rem);
+    background: var(--background);
+  }
+
+  .featured-collection-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: clamp(1.35rem, 2.2vw, 2rem);
+  }
+
+  .featured-collection-heading {
+    font-family: var(--font-poetry-local), serif;
+    font-size: clamp(2.35rem, 4vw, 4rem);
+    font-weight: 400;
+    line-height: 1.05;
+    color: var(--coral);
+  }
+
+  .featured-collection-link {
+    font-size: clamp(0.58rem, 0.75vw, 0.72rem);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--ink);
+    transition: color 300ms ease;
+  }
+
+  .featured-collection-link:hover {
+    color: var(--coral);
+  }
+
+  .featured-collection-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+
+  .featured-collection-product {
+    display: block;
+    min-width: 0;
+  }
+
+  .featured-collection-image {
+    position: relative;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    background: var(--muted);
+  }
+
+  .featured-collection-name {
+    margin-top: 0.62rem;
+    font-family: var(--font-tan-pearl-local), serif;
+    font-size: clamp(0.68rem, 0.85vw, 0.95rem);
+    line-height: 1.15;
+    color: var(--ink);
+  }
+
+  .featured-collection-meta {
+    margin-top: 0.28rem;
+    font-size: clamp(0.52rem, 0.65vw, 0.72rem);
+    line-height: 1;
+    color: rgb(46 37 33 / 0.8);
+  }
+
+  .featured-collection-sequence {
+    background: var(--background);
+  }
+
+  .editorial-collection-banner {
+    position: relative;
+    display: block;
+    height: clamp(18.75rem, 38vw, 34rem);
+    overflow: hidden;
+    color: var(--cream);
+    background: var(--ink);
+  }
+
+  .editorial-collection-banner__image {
+    opacity: 0;
+    transform: scale(1.015);
+    transition:
+      opacity 900ms ease,
+      transform 4200ms ease;
+  }
+
+  .editorial-collection-banner__image--active {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .editorial-collection-banner__shade {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+      linear-gradient(180deg, rgb(46 37 33 / 0.06), rgb(46 37 33 / 0.5)),
+      linear-gradient(90deg, rgb(46 37 33 / 0.28), transparent 62%);
+  }
+
+  .editorial-collection-banner__label {
+    position: absolute;
+    left: 50%;
+    bottom: calc(clamp(4rem, 7vw, 7rem) + 4.8rem);
+    z-index: 2;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-size: clamp(0.62rem, 0.8vw, 0.75rem);
+    font-weight: 600;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--petal);
+    text-shadow: 0 0.6rem 1.6rem rgb(46 37 33 / 0.3);
+  }
+
+  .editorial-collection-banner__title {
+    position: absolute;
+    left: 50%;
+    bottom: clamp(3rem, 6vw, 5.5rem);
+    z-index: 2;
+    width: min(40rem, calc(100vw - 2.5rem));
+    transform: translateX(-50%);
+    text-align: center;
+    font-size: clamp(2.65rem, 7vw, 6rem);
+    line-height: 1;
+    color: var(--cream);
+    text-shadow: 0 1rem 2.4rem rgb(46 37 33 / 0.38);
+  }
+
+  .editorial-collection-banner__progress {
+    position: absolute;
+    left: 50%;
+    bottom: clamp(1.1rem, 2.2vw, 1.65rem);
+    z-index: 3;
+    display: flex;
+    transform: translateX(-50%);
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+  }
+
+  .editorial-collection-banner__dot {
+    position: relative;
+    display: block;
+    width: 0.58rem;
+    height: 0.58rem;
+    border-radius: 9999px;
+    background: rgb(251 245 236 / 0.9);
+    box-shadow: 0 0.35rem 1rem rgb(46 37 33 / 0.25);
+  }
+
+  .editorial-collection-banner__dot::before {
+    content: '';
+    position: absolute;
+    inset: -0.22rem;
+    border-radius: inherit;
+    background: conic-gradient(
+      var(--cream) var(--story-progress),
+      transparent 0deg
+    );
+    opacity: 0;
+    -webkit-mask:
+      radial-gradient(farthest-side, transparent calc(100% - 2px), #000 0);
+    mask:
+      radial-gradient(farthest-side, transparent calc(100% - 2px), #000 0);
+  }
+
+  .editorial-collection-banner__dot--active::before {
+    opacity: 1;
+    animation: story-progress 4.2s linear forwards;
+  }
+
+  @keyframes story-progress {
+    from {
+      --story-progress: 0deg;
+    }
+
+    to {
+      --story-progress: 360deg;
+    }
+  }
+
   .brand-flow,
   .brand-organic {
     position: relative;
@@ -315,6 +621,20 @@
       url('/images/isole-pattern-lines-lavender-nude.png'),
       url('/images/isole-pattern-organic-coral-petal.png'),
       url('/images/isole-pattern-dots-coral-petal.png');
+  }
+
+  .footer-minimal.brand-organic::before {
+    display: block;
+    opacity: 0.14;
+    background-image: url('/images/patron-lineas-web-grande-1920x1080.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    mix-blend-mode: multiply;
+  }
+
+  .community-clean-bg.brand-organic::before {
+    display: none;
   }
 
   .brand-flow::after,
@@ -391,10 +711,185 @@
     gap: 0.45rem;
   }
 
+  .mobile-catalog {
+    background: var(--cream);
+    padding: 1.45rem 0 0;
+  }
+
+  .mobile-catalog__intro {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2.75rem;
+    text-align: center;
+  }
+
+  .mobile-catalog__isologo {
+    display: block;
+    width: 3.15rem;
+    height: 3.15rem;
+    object-fit: contain;
+  }
+
+  .mobile-catalog__eyebrow {
+    position: relative;
+    color: var(--ink);
+    font-family: var(--font-tan-pearl-local), serif;
+    font-size: 1.05rem;
+    font-weight: 400;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .mobile-catalog__eyebrow::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -0.65rem;
+    width: 2.1rem;
+    height: 1px;
+    transform: translateX(-50%);
+    background: var(--ink);
+  }
+
+  .mobile-catalog__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 1.2rem;
+    row-gap: 2.25rem;
+  }
+
+  .mobile-catalog-card {
+    display: block;
+    min-width: 0;
+    color: var(--ink);
+  }
+
+  .mobile-catalog-card__image {
+    position: relative;
+    aspect-ratio: 3 / 4.45;
+    overflow: hidden;
+    background: color-mix(in oklab, var(--nude) 36%, var(--cream));
+  }
+
+  .mobile-catalog-card__image span {
+    position: absolute;
+    top: 0.72rem;
+    left: 0.72rem;
+    z-index: 2;
+    color: var(--ink);
+    font-size: 0.48rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .mobile-catalog-card h2 {
+    margin-top: 0.55rem;
+    color: var(--ink);
+    font-family: var(--font-tan-pearl-local), serif;
+    font-size: 0.62rem;
+    line-height: 1.15;
+  }
+
+  .mobile-catalog-card p {
+    margin-top: 0.2rem;
+    color: rgb(46 37 33 / 0.68);
+    font-size: 0.5rem;
+    line-height: 1;
+  }
+
+}
+
+@media (min-width: 768px) {
+  @layer utilities {
+    .featured-collection-block {
+      padding-inline: clamp(3rem, 5vw, 5rem);
+    }
+
+    .featured-collection-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(1.4rem, 2vw, 2rem);
+    }
+
+    .featured-collection-name {
+      margin-top: 0.9rem;
+    }
+  }
 }
 
 @media (max-width: 767px) {
   @layer utilities {
+    .footer-minimal.brand-organic::before {
+      display: block;
+      opacity: 0.08;
+      background-position: center;
+      background-size: cover;
+    }
+
+    .community-clean-bg.brand-organic::before {
+      display: none;
+    }
+
+    .featured-collection-block {
+      padding: 2.15rem 1.25rem 3.05rem;
+      background: var(--cream);
+    }
+
+    .hero-video {
+      transform: scale(1.52);
+      transform-origin: center bottom;
+    }
+
+    .featured-collection-header {
+      margin-bottom: 1.25rem;
+    }
+
+    .featured-collection-heading {
+      font-size: 2.45rem;
+      letter-spacing: 0;
+    }
+
+    .featured-collection-link {
+      font-size: 0.58rem;
+    }
+
+    .featured-collection-grid {
+      gap: 1.18rem;
+    }
+
+    .featured-collection-product:nth-child(n + 3) {
+      display: none;
+    }
+
+    .featured-collection-image {
+      aspect-ratio: 2 / 3;
+    }
+
+    .featured-collection-name {
+      margin-top: 0.5rem;
+      font-size: 0.6rem;
+      line-height: 1.15;
+    }
+
+    .featured-collection-meta {
+      margin-top: 0.22rem;
+      font-size: 0.5rem;
+    }
+
+    .editorial-collection-banner {
+      height: 18.7rem;
+    }
+
+    .editorial-collection-banner__label {
+      display: none;
+    }
+
+    .editorial-collection-banner__title {
+      bottom: 3.25rem;
+      font-size: 2.7rem;
+    }
+
     .brand-hero__manual-pattern {
       opacity: 0.18;
       background-position:
@@ -411,14 +906,20 @@
     }
 
     .brand-hero__palette {
-      left: 1.25rem;
-      bottom: 1rem;
-      width: 8.5rem;
+      display: none;
+    }
+
+    .brand-hero__palette > span {
+      width: 0.42rem;
+      height: 0.42rem;
+      border-radius: 9999px;
+      background: rgb(251 245 236 / 0.92) !important;
+      box-shadow: 0 0.45rem 1.3rem rgb(46 37 33 / 0.28);
     }
 
     .brand-flow::before,
     .brand-organic::before {
-      opacity: 0.12;
+      opacity: 0.04;
       background-position:
         left -15rem top 5rem,
         right -13rem top 34%,

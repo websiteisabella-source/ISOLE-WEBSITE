@@ -33,34 +33,34 @@ function CommunityImage({ post }: { post: CommunityPost }) {
 
 export function CommunityGallery() {
   return (
-    <section id="comunidad" className="brand-organic bg-cream/55 px-5 py-24 md:px-10 md:py-32">
+    <section id="comunidad" className="community-clean-bg brand-organic bg-cream px-7 pt-8 pb-16 md:px-10 md:py-32">
       <div className="mx-auto max-w-7xl">
-        <Reveal className="mb-12 flex flex-col items-center text-center">
-          <span className="text-[0.7rem] uppercase tracking-luxe text-coral">
+        <Reveal className="mb-10 flex flex-col items-center text-center md:mb-12">
+          <span className="manual-kicker text-coral">
             Comunidad
           </span>
-          <h2 className="editorial-title mt-4 max-w-2xl text-balance text-4xl text-ink md:text-6xl">
+          <h2 className="editorial-title mt-3 max-w-[18rem] text-balance text-[2.65rem] leading-[0.95] text-ink md:max-w-2xl md:text-6xl">
             Mujeres reales, momentos reales
           </h2>
-          <p className="brand-subtitle mt-3 text-3xl text-coral">
+          <p className="brand-subtitle mt-3 text-2xl leading-none text-coral md:text-3xl">
             comunidad ISOLÉ
           </p>
           <span
-            className="mt-5 block h-1 w-24 rounded-full bg-gradient-to-r from-coral via-petal to-lavender"
+            className="mt-4 hidden h-1 w-24 rounded-full bg-gradient-to-r from-coral via-petal to-lavender md:block"
             aria-hidden="true"
           />
           <a
             href={INSTAGRAM_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-coral transition-colors duration-500 hover:text-lavender"
+            className="mt-5 inline-flex items-center gap-2 text-[0.64rem] font-medium text-ink/75 transition-colors duration-500 hover:text-coral md:mt-6 md:text-sm md:font-semibold md:text-coral md:hover:text-lavender"
           >
-            <InstagramIcon className="size-5" />
+            <InstagramIcon className="size-3.5 md:size-5" />
             ISOLÉ
           </a>
         </Reveal>
 
-        <div className="grid grid-cols-3 gap-1.5 md:gap-3">
+        <div className="mx-auto grid max-w-[22rem] grid-cols-3 gap-2 md:max-w-none md:gap-3">
           {communityPosts.map((post, i) => (
             <Reveal
               key={post.id}

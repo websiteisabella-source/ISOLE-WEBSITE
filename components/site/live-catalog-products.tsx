@@ -4,7 +4,7 @@ import Link from 'next/link'
 import type { ReactNode } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 
-import { HeartSunIcon } from '@/components/site/icons'
+import { ComingSoonArtwork } from '@/components/site/coming-soon-artwork'
 import type { CatalogGroupType } from '@/lib/products'
 
 type ApiEnvelope<T> = {
@@ -24,6 +24,13 @@ type ApiProduct = {
   clothing_type_ids: string[]
   image_ids: string[]
   primary_image_id?: string | null
+  primary_image_url?: string | null
+  image_urls?: string[]
+  image_assets?: {
+    id: string
+    secure_url: string
+    original_filename?: string | null
+  }[]
 }
 
 type ApiGroup = {
@@ -33,8 +40,18 @@ type ApiGroup = {
   kind: 'collection' | 'clothing_type'
 }
 
-const apiBase =
-  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, '') ?? 'http://127.0.0.1:8000'
+const configuredApiBase = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, '')
+
+function getApiBase() {
+  if (configuredApiBase) return configuredApiBase
+  if (
+    typeof window !== 'undefined' &&
+    ['localhost', '127.0.0.1'].includes(window.location.hostname)
+  ) {
+    return 'http://127.0.0.1:8000'
+  }
+  return ''
+}
 
 export function LiveCatalogProducts({
   currentSlug,
@@ -56,6 +73,9 @@ export function LiveCatalogProducts({
     let cancelled = false
 
     async function loadLiveCatalog() {
+      const apiBase = getApiBase()
+      if (!apiBase) return
+
       try {
         const groupResponse = await fetch(`${apiBase}/api/v1/categories?page_size=100`)
         if (!groupResponse.ok) return
@@ -139,18 +159,23 @@ function LiveProductCard({
   const category = groups.find((group) =>
     [...product.collection_ids, ...product.clothing_type_ids].includes(group.id),
   )
+  const image =
+    product.primary_image_url ??
+    product.image_urls?.[0] ??
+    product.image_assets?.[0]?.secure_url ??
+    null
   const content = (
     <>
       <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-muted">
-        <div className="flex size-full flex-col items-center justify-center bg-nude/70 px-8 text-center transition-colors duration-[900ms] ease-luxe hover:bg-petal/45">
-          <HeartSunIcon className="size-14 text-coral" />
-          <span className="mt-8 text-[0.62rem] uppercase tracking-luxe text-coral">
-            {category?.name ?? 'ISOLE'}
-          </span>
-          <span className="brand-subtitle mt-3 text-4xl text-ink">
-            {product.image_ids.length > 0 ? 'Disponible' : 'Próximamente'}
-          </span>
-        </div>
+        {image ? (
+          <img
+            src={image}
+            alt={`${product.name} - catálogo ISOLÉ`}
+            className="size-full object-cover transition-transform duration-[900ms] ease-luxe group-hover:scale-[1.03]"
+          />
+        ) : (
+          <ComingSoonArtwork label={category?.name ?? 'ISOLÉ'} />
+        )}
       </div>
       <div className="mt-5 flex items-baseline justify-between gap-4">
         <h3 className="font-serif text-2xl leading-[1.25] text-ink">{product.name}</h3>

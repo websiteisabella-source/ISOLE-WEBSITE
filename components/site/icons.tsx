@@ -18,6 +18,14 @@ export function WhatsAppIcon(props: SVGProps<SVGSVGElement>) {
   )
 }
 
+export function PhoneIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M7.4 4.5 9 8.1c.2.5.1 1-.2 1.4l-1 1.1a11 11 0 0 0 5.6 5.6l1.1-1c.4-.3.9-.4 1.4-.2l3.6 1.6c.5.2.8.7.7 1.3l-.4 2.2c-.1.6-.6 1-1.2 1A15.6 15.6 0 0 1 3 5.4c0-.6.4-1.1 1-1.2l2.2-.4c.6-.1 1.1.2 1.2.7Z" />
+    </svg>
+  )
+}
+
 export function HeartSunIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...base} {...props}>

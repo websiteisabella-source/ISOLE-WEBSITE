@@ -10,8 +10,8 @@
     "sync:instagram": "node scripts/sync-instagram-community.mjs",
     "build": "next build && node scripts/prepare-static-dist.mjs",
     "start": "next start",
-    "lint": "tsc --noEmit",
-    "typecheck": "tsc --noEmit"
+    "lint": "next typegen && tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",

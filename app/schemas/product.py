@@ -6,6 +6,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 
 from app.core.enums import ProductStatus
 from app.schemas.base import TimestampedRead
+from app.schemas.image import ImageRead
 from app.validators.common import validate_slug
 from app.validators.security import reject_nosql_injection, sanitize_text
 
@@ -164,6 +165,9 @@ class ProductRead(TimestampedRead):
     clothing_type_ids: list[str]
     image_ids: list[str]
     primary_image_id: str | None = None
+    image_assets: list[ImageRead] = Field(default_factory=list)
+    image_urls: list[str] = Field(default_factory=list)
+    primary_image_url: str | None = None
     variants: list[ProductVariantPayload]
     attributes: dict[str, Any]
     is_featured: bool

@@ -23,7 +23,7 @@ export function QuoteSection() {
         <video
           className="size-full object-cover"
           src={videoSrc}
-          aria-label="Video de temporada de vacaciones y verano de ISOLE"
+          aria-label="Video de temporada de vacaciones y verano de ISOLÉ"
           autoPlay
           loop
           muted

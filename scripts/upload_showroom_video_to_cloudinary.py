@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import argparse
 import sys
 from pathlib import Path
 
@@ -46,15 +47,34 @@ def optimized_video_url(public_id: str) -> str:
 async def main() -> None:
     """Upload the video and print its optimized delivery URL."""
 
-    if not VIDEO_PATH.exists():
-        raise FileNotFoundError(f"Video not found: {VIDEO_PATH}")
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--video-path",
+        type=Path,
+        default=VIDEO_PATH,
+        help="Path to the local video file to upload.",
+    )
+    parser.add_argument(
+        "--public-id",
+        default=PUBLIC_ID,
+        help="Cloudinary public_id to write.",
+    )
+    args = parser.parse_args()
+
+    video_path = args.video_path
+    if not video_path.is_absolute():
+        video_path = ROOT / video_path
+    video_path = video_path.resolve()
+
+    if not video_path.exists():
+        raise FileNotFoundError(f"Video not found: {video_path}")
 
     settings = Settings()
     configure_cloudinary(settings)
     result = await asyncio.to_thread(
         cloudinary.uploader.upload,
-        str(VIDEO_PATH),
-        public_id=PUBLIC_ID,
+        str(video_path),
+        public_id=args.public_id,
         resource_type="video",
         overwrite=True,
         invalidate=True,

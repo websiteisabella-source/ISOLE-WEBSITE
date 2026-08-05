@@ -50,7 +50,7 @@ class ProductService:
                 ],
             )
         product = await self.products.create(data)
-        return serialize_document(product)
+        return await self._serialize_product(product)
 
     async def list_products(
         self,
@@ -80,7 +80,7 @@ class ProductService:
             featured=featured,
         )
         total = await self.products.count(filters=filters)
-        return [serialize_document(product) for product in products], total
+        return await self._serialize_products(products), total
 
     async def list_admin_products(
         self,
@@ -111,13 +111,13 @@ class ProductService:
             sort_direction=sort_direction,
         )
         total = await self.products.count(filters=filters)
-        return [serialize_document(product) for product in products], total
+        return await self._serialize_products(products), total
 
     async def get_product(self, product_id: str) -> dict:
         """Get a product by id."""
 
         product = await self.products.get(product_id)
-        return serialize_document(product)
+        return await self._serialize_product(product)
 
     async def get_public_product(self, product_id: str) -> dict:
         """Get a public product by id."""
@@ -125,7 +125,7 @@ class ProductService:
         product = await self.products.get(product_id)
         if not product.is_active or product.status != ProductStatus.PUBLISHED:
             raise NotFoundError("Product not found")
-        return serialize_document(product)
+        return await self._serialize_product(product)
 
     async def get_public_product_by_slug(self, slug: str) -> dict:
         """Get a public product by slug."""
@@ -133,7 +133,7 @@ class ProductService:
         product = await self.products.get_by_slug(slug)
         if product is None or not product.is_active or product.status != ProductStatus.PUBLISHED:
             raise NotFoundError("Product not found")
-        return serialize_document(product)
+        return await self._serialize_product(product)
 
     async def update_product(
         self,
@@ -160,7 +160,7 @@ class ProductService:
         update_data["publication_errors"] = merged_errors
         update_data["updated_by"] = admin_id
         product = await self.products.update(product_id, update_data)
-        return serialize_document(product)
+        return await self._serialize_product(product)
 
     async def publish_product(self, product_id: str, admin_id: str | None = None) -> dict:
         """Publish a product when it has the minimum public data."""
@@ -213,13 +213,13 @@ class ProductService:
         source_data["updated_by"] = admin_id
         source_data["publication_errors"] = self.publication_errors(source_data)
         product = await self.products.create(source_data)
-        return serialize_document(product)
+        return await self._serialize_product(product)
 
     async def delete_product(self, product_id: str) -> dict:
         """Soft delete a product."""
 
         product = await self.products.soft_delete(product_id)
-        return serialize_document(product)
+        return await self._serialize_product(product)
 
     async def summary(self) -> dict:
         """Return admin dashboard product metrics."""
@@ -243,8 +243,36 @@ class ProductService:
             "draft_products": draft,
             "archived_products": archived,
             "incomplete_products": incomplete_count,
-            "recent_products": [serialize_document(product) for product in recent],
+            "recent_products": await self._serialize_products(recent),
         }
+
+    async def _serialize_products(self, products: list) -> list[dict]:
+        """Serialize products with their image metadata."""
+
+        return [await self._serialize_product(product) for product in products]
+
+    async def _serialize_product(self, product) -> dict:
+        """Serialize a product and include image URLs for admin and public clients."""
+
+        data = serialize_document(product)
+        image_ids = data.get("image_ids") or []
+        images = await self.images.list_by_ids(image_ids)
+        image_by_id = {str(image.id): image for image in images}
+        ordered_images = [
+            image_by_id[image_id]
+            for image_id in image_ids
+            if image_id in image_by_id
+        ]
+        image_assets = [serialize_document(image) for image in ordered_images]
+        primary_image_id = data.get("primary_image_id")
+        primary = image_by_id.get(primary_image_id) if primary_image_id else None
+        if primary is None and ordered_images:
+            primary = ordered_images[0]
+
+        data["image_assets"] = image_assets
+        data["image_urls"] = [image.secure_url for image in ordered_images]
+        data["primary_image_url"] = primary.secure_url if primary else None
+        return data
 
     def publication_errors(self, data: dict) -> list[str]:
         """Return missing fields that block publication."""

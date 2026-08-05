@@ -1,53 +1,21 @@
-import Link from 'next/link'
-import { ProductCard } from './product-card'
-import { Reveal } from './reveal'
+import { FeaturedCollectionBlock } from './featured-collection-block'
+import { VittaStoryCarousel } from './vitta-story-carousel'
 import { getActiveProducts } from '@/lib/products'
 
 export function NewArrivals() {
-  const featuredProducts = getActiveProducts()
-    .filter((product) => product.product || product.model)
-    .slice(0, 3)
+  const vittaProducts = getActiveProducts().filter((product) =>
+    ['blusa-vitta', 'falda-dolce-vitta', 'jean-vitta'].includes(product.slug),
+  )
 
   return (
-    <section
-      id="novedades"
-      className="px-5 pt-12 pb-12 md:px-10 md:py-32"
-    >
-      <div className="mx-auto max-w-7xl">
-        <Reveal className="mb-14 text-center">
-          <span className="text-[0.7rem] uppercase tracking-luxe text-coral">
-            Recién llegado
-          </span>
-          <h2 className="editorial-title mx-auto mt-4 max-w-2xl text-balance text-4xl text-ink md:text-6xl">
-            Las piezas que estrenan la estación
-          </h2>
-          <span
-            className="mx-auto mt-5 block h-1 w-28 rounded-full bg-gradient-to-r from-coral via-petal to-lavender"
-            aria-hidden="true"
-          />
-          <p className="mx-auto mt-6 max-w-md text-sm leading-relaxed text-muted-foreground">
-            Pasa el cursor sobre cada pieza para verla cobrar vida. Todas
-            disponibles para descubrir en nuestro showroom.
-          </p>
-        </Reveal>
+    <section id="novedades" className="featured-collection-sequence">
+      <VittaStoryCarousel />
 
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 md:gap-7">
-          {featuredProducts.map((product, i) => (
-            <Reveal key={product.slug} delay={i * 0.12}>
-              <ProductCard product={product} />
-            </Reveal>
-          ))}
-        </div>
-
-        <div className="mt-7 hidden justify-center md:mt-14 md:flex">
-          <Link
-            href="/catalogo/todos-los-articulos"
-            className="inline-flex items-center justify-center rounded-full border border-coral bg-coral px-8 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-primary-foreground shadow-[0_0.9rem_2rem_rgba(241,86,58,0.2)] transition-all duration-500 ease-luxe hover:border-lavender hover:bg-lavender"
-          >
-            Explorar catálogo completo
-          </Link>
-        </div>
-      </div>
+      <FeaturedCollectionBlock
+        title="Vitta"
+        href="/catalogo/vitta"
+        products={vittaProducts}
+      />
     </section>
   )
 }

@@ -1,3 +1,5 @@
+import { cloudinaryVideos } from './cloudinary-videos'
+
 const DEFAULT_WHATSAPP_NUMBER = '521234567890'
 
 export const SITE_NAME = 'ISOLÉ'
@@ -8,9 +10,11 @@ export const INSTAGRAM_URL =
   process.env.NEXT_PUBLIC_INSTAGRAM_URL ??
   'https://www.instagram.com/isabellla.co/'
 
-// Optional looping, muted hero video. When set, the Hero plays it on loop
-// over the poster image. Leave unset to show the still image only.
-export const HERO_VIDEO_URL = process.env.NEXT_PUBLIC_HERO_VIDEO_URL ?? ''
+// Looping, muted hero video. The env var can override the default showroom video.
+export const HERO_VIDEO_URL =
+  process.env.NEXT_PUBLIC_HERO_VIDEO_URL ?? cloudinaryVideos.barrancabermeja
+
+export const HERO_VIDEO_MIME_TYPE = 'video/mp4'
 
 export const WHATSAPP_NUMBER =
   (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? DEFAULT_WHATSAPP_NUMBER).replace(

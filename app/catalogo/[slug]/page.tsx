@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { ComingSoonArtwork } from '@/components/site/coming-soon-artwork'
 import { Footer } from '@/components/site/footer'
 import { ArrowIcon } from '@/components/site/icons'
 import { LiveCatalogProducts } from '@/components/site/live-catalog-products'
@@ -13,6 +15,8 @@ import {
   getActiveProducts,
   getCatalogGroup,
   getCatalogProducts,
+  getProductCollectionName,
+  hasVerifiedProductMedia,
   type CatalogGroup,
   type Product,
 } from '@/lib/products'
@@ -23,7 +27,6 @@ const categories = catalogGroups.filter((group) => group.type === 'category')
 const allProductsGroup = catalogGroups.find(
   (group) => group.slug === 'todos-los-articulos',
 )
-
 export function generateStaticParams() {
   return catalogGroups.map((group) => ({ slug: group.slug }))
 }
@@ -72,50 +75,19 @@ export default async function CatalogGroupPage({
   return (
     <>
       <Navbar />
-      <main className="pt-28 md:pt-32">
+      <main className="pt-24 md:pt-32">
         <section className="mx-auto max-w-7xl px-5 pb-24 md:px-10 md:pb-32">
+          <MobileCatalogView group={group} products={products} />
+
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-[0.7rem] uppercase tracking-[0.18em] text-muted-foreground transition-colors duration-500 hover:text-coral"
+            className="hidden items-center gap-2 text-[0.7rem] uppercase tracking-[0.18em] text-muted-foreground transition-colors duration-500 hover:text-coral md:inline-flex"
           >
             <ArrowIcon className="size-4 rotate-180" />
             Volver al inicio
           </Link>
 
-          <Reveal className="mt-10 overflow-hidden rounded-sm bg-nude/70 md:mt-14">
-            <div className="grid grid-cols-1 md:grid-cols-[1.1fr_0.9fr]">
-              <div className="px-6 py-12 md:px-12 md:py-16">
-                <span className="text-[0.7rem] uppercase tracking-luxe text-coral">
-                  {group.type === 'collection'
-                    ? 'Colección'
-                    : group.type === 'category'
-                      ? 'Categoría'
-                      : 'Catálogo ISOLÉ'}
-                </span>
-                <h1 className="editorial-title mt-5 max-w-3xl text-balance text-5xl text-ink md:text-7xl">
-                  {group.name}
-                </h1>
-                <p className="mt-7 max-w-xl text-sm leading-relaxed text-muted-foreground">
-                  {group.description ??
-                    (group.type === 'aggregate'
-                      ? 'Una vista viva del showroom: colecciones, categorías y piezas activas reunidas sin repetir artículos.'
-                      : 'Una selección del catálogo actual organizada para explorar con calma, conservando la estética cálida y expresiva de ISOLÉ.')}
-                </p>
-              </div>
-              <div className="flex min-h-64 flex-col justify-end bg-lavender px-6 py-10 text-nude md:px-10">
-                <p className="brand-subtitle text-5xl leading-none md:text-6xl">
-                  identidad,
-                  <br />
-                  luz y evolución
-                </p>
-                <p className="mt-8 text-[0.68rem] uppercase tracking-luxe">
-                  {products.length} {products.length === 1 ? 'artículo' : 'artículos'}
-                </p>
-              </div>
-            </div>
-          </Reveal>
-
-          <Reveal className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-10">
+          <Reveal className="mt-8 hidden grid-cols-1 gap-8 md:grid md:grid-cols-2 md:gap-10">
             <CatalogNavBlock
               title="Colecciones"
               groups={collections}
@@ -129,30 +101,32 @@ export default async function CatalogGroupPage({
           </Reveal>
 
           {allProductsGroup && (
-            <Reveal className="mt-6 flex justify-center">
+            <Reveal className="mt-6 hidden justify-center md:flex">
               <CatalogLink group={allProductsGroup} activeSlug={group.slug} />
             </Reveal>
           )}
 
-          <LiveCatalogProducts
-            currentSlug={group.slug}
-            groupType={group.type}
-            staticSlugs={products.map((product) => product.slug)}
-          >
-            {group.type === 'aggregate' ? (
-              <div className="mt-16 space-y-20">
-                {sections.map((section, sectionIndex) => (
-                  <CatalogSection
-                    key={section.slug}
-                    section={section}
-                    delay={sectionIndex * 0.04}
-                  />
-                ))}
-              </div>
-            ) : (
-              <ProductGrid products={products} />
-            )}
-          </LiveCatalogProducts>
+          <div className="hidden md:block">
+            <LiveCatalogProducts
+              currentSlug={group.slug}
+              groupType={group.type}
+              staticSlugs={products.map((product) => product.slug)}
+            >
+              {group.type === 'aggregate' ? (
+                <div className="mt-16 space-y-20">
+                  {sections.map((section, sectionIndex) => (
+                    <CatalogSection
+                      key={section.slug}
+                      section={section}
+                      delay={sectionIndex * 0.04}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <ProductGrid products={products} />
+              )}
+            </LiveCatalogProducts>
+          </div>
 
           {products.length === 0 && (
             <p className="mt-14 text-center text-sm leading-relaxed text-muted-foreground">
@@ -164,6 +138,72 @@ export default async function CatalogGroupPage({
       <Footer />
       <WhatsAppFloat />
     </>
+  )
+}
+
+function MobileCatalogView({
+  group,
+  products,
+}: {
+  group: CatalogGroup
+  products: Product[]
+}) {
+  return (
+    <div className="mobile-catalog md:hidden">
+      <div className="mobile-catalog__intro">
+        <Image
+          src="/icon.png"
+          alt="Isologo ISOLÉ"
+          width={54}
+          height={54}
+          priority
+          className="mobile-catalog__isologo"
+        />
+      </div>
+      <div className="mobile-catalog__grid">
+        {products.map((product) => (
+          <MobileCatalogProduct
+            key={product.slug}
+            product={product}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function MobileCatalogProduct({
+  product,
+}: {
+  product: Product
+}) {
+  const image = product.product || product.model || '/placeholder.svg'
+  const hasProductMedia = hasVerifiedProductMedia(product)
+
+  return (
+    <Link href={`/product/${product.slug}`} className="mobile-catalog-card">
+      <div className="mobile-catalog-card__image">
+        {hasProductMedia ? (
+          <>
+            <Image
+              src={image}
+              alt={`${product.name} - catálogo ISOLÉ`}
+              fill
+              sizes="50vw"
+              className="object-cover object-center"
+            />
+            <span>Disponible</span>
+          </>
+        ) : (
+          <ComingSoonArtwork
+            label={getProductCollectionName(product)}
+            className="px-3"
+          />
+        )}
+      </div>
+      <h2>{product.name}</h2>
+      <p>{product.category}</p>
+    </Link>
   )
 }
 

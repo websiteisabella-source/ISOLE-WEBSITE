@@ -19,8 +19,8 @@ const tanPearl = localFont({
   weight: '400',
   style: 'normal',
   display: 'swap',
-  fallback: ['Georgia', 'serif'],
-  adjustFontFallback: 'Times New Roman',
+  fallback: ['serif'],
+  adjustFontFallback: false,
   preload: true,
 })
 
@@ -30,8 +30,8 @@ const poetry = localFont({
   weight: '400',
   style: 'normal',
   display: 'swap',
-  fallback: ['Georgia', 'serif'],
-  adjustFontFallback: 'Times New Roman',
+  fallback: ['serif'],
+  adjustFontFallback: false,
   preload: true,
 })
 

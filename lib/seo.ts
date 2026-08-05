@@ -20,7 +20,7 @@ export const HOME_KEYWORDS = [
   'showroom de ropa femenina',
   'ropa natural para mujer',
   'moda femenina elegante',
-  'ropa romantica para mujer',
+  'ropa romántica para mujer',
   'ISOLÉ',
 ]
 

@@ -1,7 +1,11 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import type { Product } from '@/lib/products'
-import { HeartSunIcon } from './icons'
+import {
+  getProductCollectionName,
+  hasVerifiedProductMedia,
+  type Product,
+} from '@/lib/products'
+import { ComingSoonArtwork } from './coming-soon-artwork'
 
 export function ProductCard({
   product,
@@ -12,7 +16,7 @@ export function ProductCard({
 }) {
   const productImage = product.product || product.model || '/placeholder.svg'
   const modelImage = product.model || product.product || '/placeholder.svg'
-  const hasProductMedia = Boolean(product.product || product.model)
+  const hasProductMedia = hasVerifiedProductMedia(product)
 
   return (
     <Link
@@ -39,17 +43,9 @@ export function ProductCard({
             />
           </>
         ) : (
-          <div className="flex size-full flex-col items-center justify-center bg-nude/70 px-8 text-center transition-colors duration-[900ms] ease-luxe group-hover:bg-petal/45">
-            <HeartSunIcon className="size-14 text-coral" />
-            <span className="mt-8 text-[0.62rem] uppercase tracking-luxe text-coral">
-              {product.category}
-            </span>
-            <span className="brand-subtitle mt-3 text-4xl text-ink">
-              Próximamente
-            </span>
-          </div>
+          <ComingSoonArtwork label={getProductCollectionName(product)} />
         )}
-        {(product.description || product.fabric || product.colors?.length) && (
+        {hasProductMedia && (product.description || product.fabric || product.colors?.length) && (
           <span className="absolute left-4 top-4 rounded-full bg-nude/90 px-3 py-1 text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-coral backdrop-blur-sm">
             Disponible en tienda
           </span>
