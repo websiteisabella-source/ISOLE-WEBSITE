@@ -14,6 +14,7 @@ export function MasonryGallery() {
         title="Crisálida"
         href="/catalogo/crisalida"
         products={products}
+        presentation="carousel"
       />
     </div>
   )

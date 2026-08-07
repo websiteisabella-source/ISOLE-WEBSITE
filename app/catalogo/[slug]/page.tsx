@@ -192,12 +192,12 @@ function MobileCatalogProduct({
               sizes="50vw"
               className="object-cover object-center"
             />
-            <span>Disponible</span>
+            <span className="mobile-catalog-card__badge">Disponible</span>
           </>
         ) : (
           <ComingSoonArtwork
             label={getProductCollectionName(product)}
-            className="px-3"
+            className="px-4"
           />
         )}
       </div>

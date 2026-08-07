@@ -70,6 +70,13 @@ function candidateFiles(pathname) {
   const paths = [directPath]
 
   if (pathname.endsWith("/")) {
+    const cleanPathname = pathname.replace(/\/+$/, "")
+    const cleanPath = cleanPathname ? toSafeFilePath(cleanPathname) : null
+
+    if (cleanPath) {
+      paths.push(`${cleanPath}.html`)
+    }
+
     paths.push(resolve(directPath, "index.html"))
   } else if (!hasExtension) {
     paths.push(`${directPath}.html`, resolve(directPath, "index.html"))

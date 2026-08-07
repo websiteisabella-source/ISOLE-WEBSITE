@@ -15,6 +15,7 @@ export function NewArrivals() {
         title="Vitta"
         href="/catalogo/vitta"
         products={vittaProducts}
+        presentation="carousel"
       />
     </section>
   )
