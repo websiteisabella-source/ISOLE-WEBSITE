@@ -3,12 +3,13 @@
 import { useState } from 'react'
 import { motion } from 'motion/react'
 import {
+  GOOGLE_MAPS_URL,
   INSTAGRAM_URL,
   SITE_NAME,
   WHATSAPP_NUMBER,
   whatsappLink,
 } from '@/lib/site'
-import { CloseIcon, InstagramIcon, PhoneIcon, WhatsAppIcon } from './icons'
+import { CloseIcon, InstagramIcon, PhoneIcon, PinIcon, WhatsAppIcon } from './icons'
 
 export function WhatsAppFloat() {
   const [isOpen, setIsOpen] = useState(false)
@@ -17,6 +18,12 @@ export function WhatsAppFloat() {
   )
   const phoneHref = `tel:+${WHATSAPP_NUMBER}`
   const contactOptions = [
+    {
+      label: 'Ubicacion en Google Maps',
+      href: GOOGLE_MAPS_URL,
+      icon: PinIcon,
+      external: true,
+    },
     {
       label: 'WhatsApp',
       href: whatsappHref,

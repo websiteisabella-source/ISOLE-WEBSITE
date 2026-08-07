@@ -9,6 +9,9 @@ export const SITE_URL = (
 export const INSTAGRAM_URL =
   process.env.NEXT_PUBLIC_INSTAGRAM_URL ??
   'https://www.instagram.com/isabellla.co/'
+export const GOOGLE_MAPS_URL =
+  process.env.NEXT_PUBLIC_GOOGLE_MAPS_URL ??
+  'https://www.google.com/maps/search/?api=1&query=ISOL%C3%89%20Barrancabermeja%20Santander%20Colombia'
 
 // Looping, muted hero video. The env var can override the default showroom video.
 export const HERO_VIDEO_URL =

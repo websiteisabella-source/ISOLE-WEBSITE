@@ -230,16 +230,11 @@ Ejemplos actuales:
 
 ### Iconos y assets generales
 
-En la raiz de `public/` tambien hay assets de branding y placeholders:
+En la raiz de `public/` tambien hay assets de branding y placeholders activos:
 
-- [public](C:\Users\Pablo Tomas Vargas\Desktop\isole-digital-showroom-design\public)
-
-Ejemplos:
-
-- `icon.svg`
+- `favicon.png`
+- `icon.png`
 - `apple-icon.png`
-- `icon-dark-32x32.png`
-- `icon-light-32x32.png`
 - `placeholder.svg`
 
 ### Como se referencian
@@ -247,7 +242,7 @@ Ejemplos:
 En Next, los archivos dentro de `public/` se consumen desde la raiz del sitio:
 
 - `public/images/hero.png` se usa como `"/images/hero.png"`
-- `public/icon.svg` se usa como `"/icon.svg"`
+- `public/icon.png` se usa como `"/icon.png"`
 
 Ejemplo real en [components/site/hero.tsx](C:\Users\Pablo Tomas Vargas\Desktop\isole-digital-showroom-design\components\site\hero.tsx):
 

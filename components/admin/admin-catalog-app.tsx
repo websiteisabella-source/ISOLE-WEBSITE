@@ -170,6 +170,9 @@ const fieldClass =
 const areaClass =
   'min-h-24 w-full rounded-md border border-border bg-cream px-3 py-2 text-sm text-foreground outline-none transition focus:border-coral focus:ring-2 focus:ring-coral/20'
 const labelClass = 'grid gap-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-ink/70'
+const filterLabelClass = 'grid gap-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-ink/55'
+const filterControlClass =
+  'h-12 w-full rounded-md border border-border bg-white px-3 text-sm text-ink shadow-sm outline-none transition-all duration-200 ease-luxe hover:border-coral/60 hover:shadow-md focus:border-coral focus:ring-2 focus:ring-coral/20'
 
 function slugify(value: string) {
   return value
@@ -946,78 +949,112 @@ function ProductsView({
         </Button>
       </div>
 
-      <div className="grid gap-3 rounded-lg border border-border bg-cream p-3 md:grid-cols-2 xl:grid-cols-[1.3fr_0.8fr_0.9fr_0.9fr_0.8fr_0.8fr_auto]">
-        <label className="relative min-w-[220px] flex-1">
-          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-ink/45" />
-          <input
-            className={cn(fieldClass, 'pl-9')}
-            placeholder="Buscar por nombre, slug o SKU"
-            value={search}
-            onChange={(event) => onSearch(event.target.value)}
-          />
-        </label>
-        <select
-          className={fieldClass}
-          value={statusFilter}
-          onChange={(event) => onStatusFilter(event.target.value as ProductStatus | 'all')}
-          aria-label="Filtrar por estado"
-        >
-          <option value="all">Todos los estados</option>
-          <option value="draft">Borrador</option>
-          <option value="published">Publicado</option>
-          <option value="archived">Archivado</option>
-        </select>
-        <select
-          className={fieldClass}
-          value={collectionFilter}
-          onChange={(event) => onCollectionFilter(event.target.value)}
-          aria-label="Filtrar por coleccion"
-        >
-          <option value="all">Todas las colecciones</option>
-          {collections.map((collection) => (
-            <option key={collection.id} value={collection.id}>
-              {collection.name}
-            </option>
-          ))}
-        </select>
-        <select
-          className={fieldClass}
-          value={clothingTypeFilter}
-          onChange={(event) => onClothingTypeFilter(event.target.value)}
-          aria-label="Filtrar por tipo de ropa"
-        >
-          <option value="all">Todos los tipos</option>
-          {clothingTypes.map((type) => (
-            <option key={type.id} value={type.id}>
-              {type.name}
-            </option>
-          ))}
-        </select>
-        <select
-          className={fieldClass}
-          value={productSort}
-          onChange={(event) => onProductSort(event.target.value as ProductSortKey)}
-          aria-label="Ordenar productos"
-        >
-          <option value="sort_order">Orden publico</option>
-          <option value="updated_at">Actualizacion</option>
-          <option value="name">Nombre</option>
-          <option value="price">Precio</option>
-        </select>
-        <select
-          className={fieldClass}
-          value={sortDirection}
-          onChange={(event) => onSortDirection(event.target.value as SortDirection)}
-          aria-label="Direccion del orden"
-        >
-          <option value="asc">Menor a mayor</option>
-          <option value="desc">Mayor a menor</option>
-        </select>
-        <Button variant="outline" onClick={onRefresh} disabled={loading}>
-          <Search className="size-4" />
-          Filtrar
-        </Button>
-      </div>
+      <section className="rounded-lg border border-border/80 bg-white/85 p-4 shadow-sm transition-all duration-300 ease-luxe hover:border-coral/30 hover:shadow-md">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <span className="grid size-9 place-items-center rounded-md bg-nude text-coral">
+              <ListFilter className="size-4" />
+            </span>
+            <div>
+              <h3 className="text-sm font-semibold uppercase tracking-[0.14em] text-ink/70">
+                Filtros
+              </h3>
+              <p className="text-sm text-ink/55">Busqueda, clasificacion y orden.</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(260px,1.4fr)_repeat(5,minmax(150px,1fr))_auto]">
+          <label className={filterLabelClass}>
+            Buscar producto
+            <span className="relative">
+              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-ink/45" />
+              <input
+                className={cn(filterControlClass, 'pl-9')}
+                placeholder="Nombre, slug o SKU"
+                value={search}
+                onChange={(event) => onSearch(event.target.value)}
+              />
+            </span>
+          </label>
+          <label className={filterLabelClass}>
+            Estado
+            <select
+              className={filterControlClass}
+              value={statusFilter}
+              onChange={(event) => onStatusFilter(event.target.value as ProductStatus | 'all')}
+            >
+              <option value="all">Todos los estados</option>
+              <option value="draft">Borrador</option>
+              <option value="published">Publicado</option>
+              <option value="archived">Archivado</option>
+            </select>
+          </label>
+          <label className={filterLabelClass}>
+            Coleccion
+            <select
+              className={filterControlClass}
+              value={collectionFilter}
+              onChange={(event) => onCollectionFilter(event.target.value)}
+            >
+              <option value="all">Todas las colecciones</option>
+              {collections.map((collection) => (
+                <option key={collection.id} value={collection.id}>
+                  {collection.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className={filterLabelClass}>
+            Tipo de ropa
+            <select
+              className={filterControlClass}
+              value={clothingTypeFilter}
+              onChange={(event) => onClothingTypeFilter(event.target.value)}
+            >
+              <option value="all">Todos los tipos</option>
+              {clothingTypes.map((type) => (
+                <option key={type.id} value={type.id}>
+                  {type.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className={filterLabelClass}>
+            Ordenar por
+            <select
+              className={filterControlClass}
+              value={productSort}
+              onChange={(event) => onProductSort(event.target.value as ProductSortKey)}
+            >
+              <option value="sort_order">Orden publico</option>
+              <option value="updated_at">Actualizacion</option>
+              <option value="name">Nombre</option>
+              <option value="price">Precio</option>
+            </select>
+          </label>
+          <label className={filterLabelClass}>
+            Direccion
+            <select
+              className={filterControlClass}
+              value={sortDirection}
+              onChange={(event) => onSortDirection(event.target.value as SortDirection)}
+            >
+              <option value="asc">Menor a mayor</option>
+              <option value="desc">Mayor a menor</option>
+            </select>
+          </label>
+          <Button
+            className="h-12 self-end whitespace-nowrap px-4 transition-all duration-200 hover:-translate-y-0.5"
+            variant="outline"
+            onClick={onRefresh}
+            disabled={loading}
+          >
+            <Search className="size-4" />
+            Filtrar
+          </Button>
+        </div>
+      </section>
 
       {productForm && (
         <ProductEditor
