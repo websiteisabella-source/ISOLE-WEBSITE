@@ -2,6 +2,9 @@
 
 import {
   Archive,
+  ArrowDown,
+  ArrowUp,
+  CheckCircle2,
   Copy,
   Image as ImageIcon,
   Layers3,
@@ -26,6 +29,8 @@ import { cn } from '@/lib/utils'
 type ProductStatus = 'draft' | 'published' | 'archived'
 type CatalogGroupKind = 'collection' | 'clothing_type'
 type ViewKey = 'summary' | 'products' | CatalogGroupKind
+type ProductSortKey = 'sort_order' | 'updated_at' | 'name' | 'price'
+type SortDirection = 'asc' | 'desc'
 
 type ApiEnvelope<T> = {
   success: boolean
@@ -273,6 +278,22 @@ function statusName(status: ProductStatus) {
   return names[status]
 }
 
+function productFormPublicationErrors(form: ProductForm) {
+  const errors: string[] = []
+  if (!form.name.trim()) errors.push('Falta el titulo.')
+  if (!form.slug.trim()) errors.push('Falta el slug.')
+  if (!form.short_description.trim() && !form.description.trim()) {
+    errors.push('Falta una descripcion.')
+  }
+  if (form.image_ids.length === 0 && !form.primary_image_id) {
+    errors.push('Falta al menos una foto.')
+  }
+  if (form.collection_ids.length === 0 && form.clothing_type_ids.length === 0) {
+    errors.push('Falta una coleccion o tipo de ropa.')
+  }
+  return errors
+}
+
 export function AdminCatalogApp() {
   const [token, setToken] = useState<string | null>(null)
   const [view, setView] = useState<ViewKey>('summary')
@@ -282,6 +303,10 @@ export function AdminCatalogApp() {
   const [images, setImages] = useState<ImageAsset[]>([])
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<ProductStatus | 'all'>('all')
+  const [collectionFilter, setCollectionFilter] = useState('all')
+  const [clothingTypeFilter, setClothingTypeFilter] = useState('all')
+  const [productSort, setProductSort] = useState<ProductSortKey>('sort_order')
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [notice, setNotice] = useState<string | null>(null)
@@ -343,6 +368,10 @@ export function AdminCatalogApp() {
       const params = new URLSearchParams({ page_size: '100' })
       if (search.trim()) params.set('search', search.trim())
       if (statusFilter !== 'all') params.set('status', statusFilter)
+      if (collectionFilter !== 'all') params.set('collection_id', collectionFilter)
+      if (clothingTypeFilter !== 'all') params.set('clothing_type_id', clothingTypeFilter)
+      params.set('sort', productSort)
+      params.set('direction', sortDirection)
 
       const [summaryData, productData, groupData, imageData] = await Promise.all([
         request<Summary>('/admin/catalog/summary'),
@@ -718,11 +747,19 @@ export function AdminCatalogApp() {
               imageMap={imageMap}
               search={search}
               statusFilter={statusFilter}
+              collectionFilter={collectionFilter}
+              clothingTypeFilter={clothingTypeFilter}
+              productSort={productSort}
+              sortDirection={sortDirection}
               productForm={productForm}
               loading={loading}
               uploading={uploading}
               onSearch={setSearch}
               onStatusFilter={setStatusFilter}
+              onCollectionFilter={setCollectionFilter}
+              onClothingTypeFilter={setClothingTypeFilter}
+              onProductSort={setProductSort}
+              onSortDirection={setSortDirection}
               onRefresh={refreshData}
               onNew={() => setProductForm(emptyProductForm())}
               onEdit={(product) => setProductForm(productToForm(product))}
@@ -738,6 +775,7 @@ export function AdminCatalogApp() {
             <GroupsView
               kind={view}
               groups={groups.filter((group) => group.kind === view)}
+              images={images}
               groupForm={groupForm}
               loading={loading}
               onNew={() => setGroupForm(emptyGroupForm(view))}
@@ -844,11 +882,19 @@ function ProductsView({
   imageMap,
   search,
   statusFilter,
+  collectionFilter,
+  clothingTypeFilter,
+  productSort,
+  sortDirection,
   productForm,
   loading,
   uploading,
   onSearch,
   onStatusFilter,
+  onCollectionFilter,
+  onClothingTypeFilter,
+  onProductSort,
+  onSortDirection,
   onRefresh,
   onNew,
   onEdit,
@@ -865,11 +911,19 @@ function ProductsView({
   imageMap: Map<string, ImageAsset>
   search: string
   statusFilter: ProductStatus | 'all'
+  collectionFilter: string
+  clothingTypeFilter: string
+  productSort: ProductSortKey
+  sortDirection: SortDirection
   productForm: ProductForm | null
   loading: boolean
   uploading: boolean
   onSearch: (value: string) => void
   onStatusFilter: (value: ProductStatus | 'all') => void
+  onCollectionFilter: (value: string) => void
+  onClothingTypeFilter: (value: string) => void
+  onProductSort: (value: ProductSortKey) => void
+  onSortDirection: (value: SortDirection) => void
   onRefresh: () => void
   onNew: () => void
   onEdit: (product: Product) => void
@@ -892,7 +946,7 @@ function ProductsView({
         </Button>
       </div>
 
-      <div className="flex flex-wrap gap-2 rounded-lg border border-border bg-cream p-3">
+      <div className="grid gap-3 rounded-lg border border-border bg-cream p-3 md:grid-cols-2 xl:grid-cols-[1.3fr_0.8fr_0.9fr_0.9fr_0.8fr_0.8fr_auto]">
         <label className="relative min-w-[220px] flex-1">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-ink/45" />
           <input
@@ -906,11 +960,58 @@ function ProductsView({
           className={fieldClass}
           value={statusFilter}
           onChange={(event) => onStatusFilter(event.target.value as ProductStatus | 'all')}
+          aria-label="Filtrar por estado"
         >
           <option value="all">Todos los estados</option>
           <option value="draft">Borrador</option>
           <option value="published">Publicado</option>
           <option value="archived">Archivado</option>
+        </select>
+        <select
+          className={fieldClass}
+          value={collectionFilter}
+          onChange={(event) => onCollectionFilter(event.target.value)}
+          aria-label="Filtrar por coleccion"
+        >
+          <option value="all">Todas las colecciones</option>
+          {collections.map((collection) => (
+            <option key={collection.id} value={collection.id}>
+              {collection.name}
+            </option>
+          ))}
+        </select>
+        <select
+          className={fieldClass}
+          value={clothingTypeFilter}
+          onChange={(event) => onClothingTypeFilter(event.target.value)}
+          aria-label="Filtrar por tipo de ropa"
+        >
+          <option value="all">Todos los tipos</option>
+          {clothingTypes.map((type) => (
+            <option key={type.id} value={type.id}>
+              {type.name}
+            </option>
+          ))}
+        </select>
+        <select
+          className={fieldClass}
+          value={productSort}
+          onChange={(event) => onProductSort(event.target.value as ProductSortKey)}
+          aria-label="Ordenar productos"
+        >
+          <option value="sort_order">Orden publico</option>
+          <option value="updated_at">Actualizacion</option>
+          <option value="name">Nombre</option>
+          <option value="price">Precio</option>
+        </select>
+        <select
+          className={fieldClass}
+          value={sortDirection}
+          onChange={(event) => onSortDirection(event.target.value as SortDirection)}
+          aria-label="Direccion del orden"
+        >
+          <option value="asc">Menor a mayor</option>
+          <option value="desc">Mayor a menor</option>
         </select>
         <Button variant="outline" onClick={onRefresh} disabled={loading}>
           <Search className="size-4" />
@@ -934,8 +1035,9 @@ function ProductsView({
       )}
 
       <div className="overflow-hidden rounded-lg border border-border bg-cream">
-        <div className="hidden min-w-[780px] grid-cols-[1.5fr_140px_150px_190px] gap-3 border-b border-border bg-muted/50 px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-ink/60 md:grid">
+        <div className="hidden min-w-[860px] grid-cols-[1.5fr_90px_140px_150px_190px] gap-3 border-b border-border bg-muted/50 px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-ink/60 md:grid">
           <span>Producto</span>
+          <span>Orden</span>
           <span>Estado</span>
           <span>Publicacion</span>
           <span>Acciones</span>
@@ -989,6 +1091,13 @@ function ProductEditor({
     .map((id) => imageById.get(id))
     .filter((image): image is ImageAsset => Boolean(image))
   const availableImages = images.filter((image) => !form.image_ids.includes(image.id)).slice(0, 12)
+  const publicationErrors = productFormPublicationErrors(form)
+  const publicationChecklist: [string, boolean][] = [
+    ['Titulo', Boolean(form.name.trim())],
+    ['Descripcion', Boolean(form.short_description.trim() || form.description.trim())],
+    ['Coleccion o tipo', form.collection_ids.length > 0 || form.clothing_type_ids.length > 0],
+    ['Fotos', form.image_ids.length > 0 || Boolean(form.primary_image_id)],
+  ]
 
   function update(next: Partial<ProductForm>) {
     onChange({ ...form, ...next })
@@ -1017,6 +1126,16 @@ function ProductEditor({
     })
   }
 
+  function moveImage(id: string, direction: -1 | 1) {
+    const currentIndex = form.image_ids.indexOf(id)
+    const nextIndex = currentIndex + direction
+    if (currentIndex < 0 || nextIndex < 0 || nextIndex >= form.image_ids.length) return
+    const image_ids = [...form.image_ids]
+    const [imageId] = image_ids.splice(currentIndex, 1)
+    image_ids.splice(nextIndex, 0, imageId)
+    update({ image_ids })
+  }
+
   async function handleUpload(files: FileList | null) {
     if (!files?.length) return
     for (const file of Array.from(files)) {
@@ -1031,7 +1150,9 @@ function ProductEditor({
           <h3 className="text-lg font-semibold text-ink">
             {form.id ? 'Editar producto' : 'Nuevo producto'}
           </h3>
-          <p className="text-sm text-ink/60">Los productos incompletos permanecen en borrador.</p>
+          <p className="text-sm text-ink/60">
+            Completa titulo, descripcion, grupo y fotos antes de publicar.
+          </p>
         </div>
         <div className="flex gap-2">
           <Button type="button" variant="ghost" onClick={onCancel}>
@@ -1042,6 +1163,44 @@ function ProductEditor({
             Guardar
           </Button>
         </div>
+      </div>
+
+      <div className="mb-5 rounded-lg border border-border bg-cream/50 p-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h4 className="text-sm font-semibold uppercase tracking-[0.14em] text-ink/70">
+            Checklist para publicar
+          </h4>
+          <span
+            className={cn(
+              'inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold',
+              publicationErrors.length === 0
+                ? 'bg-lavender/10 text-lavender'
+                : 'bg-coral/10 text-coral',
+            )}
+          >
+            <CheckCircle2 className="size-3.5" />
+            {publicationErrors.length === 0 ? 'Listo' : `${publicationErrors.length} pendiente(s)`}
+          </span>
+        </div>
+        <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+          {publicationChecklist.map(([label, complete]) => (
+            <div
+              key={String(label)}
+              className={cn(
+                'flex items-center gap-2 rounded-md border px-3 py-2 text-sm',
+                complete
+                  ? 'border-lavender/25 bg-lavender/10 text-lavender'
+                  : 'border-coral/25 bg-coral/10 text-coral',
+              )}
+            >
+              <CheckCircle2 className="size-4" />
+              {label}
+            </div>
+          ))}
+        </div>
+        {publicationErrors.length > 0 && (
+          <p className="mt-3 text-sm text-ink/60">{publicationErrors.join(' ')}</p>
+        )}
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
@@ -1193,7 +1352,7 @@ function ProductEditor({
           </div>
 
           <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-            {selectedImages.map((image) => (
+            {selectedImages.map((image, index) => (
               <ImagePickerCard
                 key={image.id}
                 image={image}
@@ -1202,6 +1361,10 @@ function ProductEditor({
                 onAdd={() => addImage(image)}
                 onRemove={() => removeImage(image.id)}
                 onPrimary={() => update({ primary_image_id: image.id })}
+                onMoveUp={index === 0 ? undefined : () => moveImage(image.id, -1)}
+                onMoveDown={
+                  index === selectedImages.length - 1 ? undefined : () => moveImage(image.id, 1)
+                }
               />
             ))}
             {selectedImages.length === 0 && (
@@ -1294,6 +1457,8 @@ function ImagePickerCard({
   onAdd,
   onRemove,
   onPrimary,
+  onMoveUp,
+  onMoveDown,
 }: {
   image: ImageAsset
   selected: boolean
@@ -1301,6 +1466,8 @@ function ImagePickerCard({
   onAdd: () => void
   onRemove: () => void
   onPrimary: () => void
+  onMoveUp?: () => void
+  onMoveDown?: () => void
 }) {
   return (
     <div className="overflow-hidden rounded-md border border-border bg-cream">
@@ -1316,6 +1483,26 @@ function ImagePickerCard({
         <div className="flex flex-wrap gap-1.5">
           {selected ? (
             <>
+              <button
+                type="button"
+                onClick={onMoveUp}
+                disabled={!onMoveUp}
+                title="Subir foto"
+                aria-label="Subir foto"
+                className="grid size-7 place-items-center rounded-md border border-border text-ink/65 transition hover:border-coral hover:text-coral disabled:cursor-not-allowed disabled:opacity-35"
+              >
+                <ArrowUp className="size-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={onMoveDown}
+                disabled={!onMoveDown}
+                title="Bajar foto"
+                aria-label="Bajar foto"
+                className="grid size-7 place-items-center rounded-md border border-border text-ink/65 transition hover:border-coral hover:text-coral disabled:cursor-not-allowed disabled:opacity-35"
+              >
+                <ArrowDown className="size-3.5" />
+              </button>
               <button
                 type="button"
                 onClick={onPrimary}
@@ -1379,7 +1566,7 @@ function ProductRow({
     product.image_urls?.[0]
 
   return (
-    <div className="grid gap-3 p-4 md:grid-cols-[1.5fr_140px_150px_190px] md:items-center">
+    <div className="grid gap-3 p-4 md:grid-cols-[1.5fr_90px_140px_150px_190px] md:items-center">
       <div className="flex min-w-0 items-center gap-3">
         <div className="grid size-14 shrink-0 place-items-center overflow-hidden rounded-md bg-muted">
           {preview ? (
@@ -1403,6 +1590,7 @@ function ProductRow({
           <p className="mt-1 truncate text-xs text-ink/50">{related || 'Sin grupo asignado'}</p>
         </div>
       </div>
+      <div className="text-sm font-semibold text-ink/70">{product.sort_order}</div>
       <StatusBadge status={product.status} />
       <div className="text-sm text-ink/65">
         {product.publication_errors.length === 0
@@ -1433,6 +1621,7 @@ function ProductRow({
 function GroupsView({
   kind,
   groups,
+  images,
   groupForm,
   loading,
   onNew,
@@ -1444,6 +1633,7 @@ function GroupsView({
 }: {
   kind: CatalogGroupKind
   groups: CatalogGroup[]
+  images: ImageAsset[]
   groupForm: GroupForm | null
   loading: boolean
   onNew: () => void
@@ -1453,6 +1643,8 @@ function GroupsView({
   onSubmit: (event: FormEvent<HTMLFormElement>) => void
   onDelete: (group: CatalogGroup) => void
 }) {
+  const imageMap = useMemo(() => new Map(images.map((image) => [image.id, image])), [images])
+
   return (
     <>
       <div className="flex flex-wrap items-end justify-between gap-3">
@@ -1468,6 +1660,7 @@ function GroupsView({
       {groupForm && (
         <GroupEditor
           form={groupForm}
+          images={images}
           loading={loading}
           onCancel={onCancel}
           onChange={onChange}
@@ -1477,10 +1670,22 @@ function GroupsView({
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {groups.map((group) => (
           <div key={group.id} className="rounded-lg border border-border bg-cream p-4">
+            {group.cover_image_id && imageMap.get(group.cover_image_id) && (
+              <div className="mb-4 aspect-[4/3] overflow-hidden rounded-md bg-muted">
+                <img
+                  src={imageMap.get(group.cover_image_id)?.secure_url}
+                  alt=""
+                  className="size-full object-cover"
+                />
+              </div>
+            )}
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h3 className="font-semibold text-ink">{group.name}</h3>
                 <p className="text-sm text-ink/60">{group.slug}</p>
+                <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-ink/45">
+                  Orden {group.sort_order}
+                </p>
               </div>
               <span
                 className={cn(
@@ -1511,17 +1716,21 @@ function GroupsView({
 
 function GroupEditor({
   form,
+  images,
   loading,
   onCancel,
   onChange,
   onSubmit,
 }: {
   form: GroupForm
+  images: ImageAsset[]
   loading: boolean
   onCancel: () => void
   onChange: (form: GroupForm) => void
   onSubmit: (event: FormEvent<HTMLFormElement>) => void
 }) {
+  const selectedCover = images.find((image) => image.id === form.cover_image_id)
+
   function update(next: Partial<GroupForm>) {
     onChange({ ...form, ...next })
   }
@@ -1574,12 +1783,19 @@ function GroupEditor({
           />
         </label>
         <label className={labelClass}>
-          Imagen portada ID
-          <input
+          Imagen portada
+          <select
             className={fieldClass}
             value={form.cover_image_id}
             onChange={(event) => update({ cover_image_id: event.target.value })}
-          />
+          >
+            <option value="">Sin portada</option>
+            {images.map((image) => (
+              <option key={image.id} value={image.id}>
+                {image.original_filename ?? image.public_id}
+              </option>
+            ))}
+          </select>
         </label>
         <label className={cn(labelClass, 'lg:col-span-2')}>
           Descripción
@@ -1590,6 +1806,13 @@ function GroupEditor({
           />
         </label>
       </div>
+      {selectedCover && (
+        <div className="mt-4 max-w-xs overflow-hidden rounded-md border border-border bg-muted">
+          <div className="aspect-[4/3]">
+            <img src={selectedCover.secure_url} alt="" className="size-full object-cover" />
+          </div>
+        </div>
+      )}
       <label className="mt-4 flex items-center gap-2 text-sm font-semibold text-ink">
         <input
           checked={form.is_active}
